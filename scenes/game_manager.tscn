@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://dvybgqm2py23e"]
+
+[ext_resource type="PackedScene" uid="uid://0f2gyoqtlf50" path="res://scenes/ui/UImanager.tscn" id="1_hwd4i"]
+
+[node name="GameManager" type="Node" unique_id=1189884721]
+
+[node name="CanvasLayer" parent="." unique_id=1292715643 instance=ExtResource("1_hwd4i")]
+
+[node name="LevelContainer" type="Node2D" parent="." unique_id=1786004210]

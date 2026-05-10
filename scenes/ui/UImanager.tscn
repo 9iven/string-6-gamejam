@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://0f2gyoqtlf50"]
+
+[ext_resource type="Shader" uid="uid://b325vuibc1eyk" path="res://scenes/ui/UImanager.gdshader" id="1_scpii"]
+[ext_resource type="Script" uid="uid://jo4pk1gyea12" path="res://scripts/color_rect.gd" id="2_tl1aw"]
+[ext_resource type="Script" uid="uid://biuotejxpbtan" path="res://scripts/dialogue_box.gd" id="3_h1v8x"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tl1aw"]
+shader = ExtResource("1_scpii")
+shader_parameter/distortion_intensity = 0.0
+
+[node name="UImanager" type="CanvasLayer" unique_id=1292715643]
+script = ExtResource("2_tl1aw")
+
+[node name="Control" type="Control" parent="." unique_id=501067536]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=836317152]
+material = SubResource("ShaderMaterial_tl1aw")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="DialogueBox" type="Panel" parent="." unique_id=1411214195]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -254.0
+offset_bottom = -58.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("3_h1v8x")
+
+[node name="SpeakerName" type="Label" parent="DialogueBox" unique_id=498106171]
+layout_mode = 0
+offset_right = 219.0
+offset_bottom = 38.0
+
+[node name="DialogueText" type="RichTextLabel" parent="DialogueBox" unique_id=1644016256]
+layout_mode = 0
+offset_top = 65.0
+offset_right = 1917.0
+offset_bottom = 192.0
+bbcode_enabled = true

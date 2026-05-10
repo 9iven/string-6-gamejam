@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://c6dadrr3rm4ka"]
+
+[ext_resource type="Script" uid="uid://1w845hr8lerj" path="res://scripts/level_manager.gd" id="1_ngxpg"]
+[ext_resource type="PackedScene" uid="uid://c0w2855ktq65q" path="res://scenes/levels/room_template.tscn" id="2_mk31d"]
+[ext_resource type="PackedScene" uid="uid://ddfwhs4e70bno" path="res://scenes/entities/player.tscn" id="3_uc4y6"]
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" unique_id=1426436409 node_paths=PackedStringArray("player_node")]
+script = ExtResource("1_ngxpg")
+room_prefab = ExtResource("2_mk31d")
+player_node = NodePath("Player")
+
+[node name="Player" parent="." unique_id=884547836 instance=ExtResource("3_uc4y6")]

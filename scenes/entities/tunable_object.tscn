@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://dmgnbto26fjki"]
+
+[ext_resource type="Script" uid="uid://cec7smijpothv" path="res://scripts/tunable_object.gd" id="1_layn1"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_uuv7m"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_layn1"]
+
+[node name="TunableObject" type="StaticBody3D" unique_id=1771573288 groups=["interactable"]]
+script = ExtResource("1_layn1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=2028240064]
+shape = SubResource("BoxShape3D_uuv7m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=983856019]
+mesh = SubResource("BoxMesh_layn1")

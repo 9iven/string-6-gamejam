@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://t0wpcuijiygy"]
+
+[ext_resource type="Script" uid="uid://cdra6km2rpr8x" path="res://scripts/locked_door.gd" id="1_echpq"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_mlwbw"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5d3va"]
+
+[node name="LockedPuzzleDoor" type="StaticBody3D" unique_id=73994241]
+script = ExtResource("1_echpq")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1951937022]
+transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 1, 0, 2, 0)
+mesh = SubResource("BoxMesh_mlwbw")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1195163395]
+transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("BoxShape3D_5d3va")

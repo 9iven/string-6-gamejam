@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://b7nbgl7b84dt2"]
+
+[ext_resource type="PackedScene" uid="uid://ddfwhs4e70bno" path="res://scenes/entities/player.tscn" id="1_eyte8"]
+[ext_resource type="PackedScene" uid="uid://dmgnbto26fjki" path="res://scenes/entities/tunable_object.tscn" id="2_7hipx"]
+[ext_resource type="Script" uid="uid://p2utyh0pwep6" path="res://scripts/dialogue_trigger.gd" id="3_gr3xe"]
+[ext_resource type="PackedScene" uid="uid://roomygclcrj8" path="res://scenes/entities/enemy.tscn" id="4_ds0u5"]
+
+[sub_resource type="Environment" id="Environment_gr3xe"]
+background_mode = 1
+background_color = Color(0.40242627, 0.2745103, 0.21146971, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ds0u5"]
+size = Vector3(1, 1, 8.427246)
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_ds0u5"]
+vertices = PackedVector3Array(-14.5, -1.948374, -14.5, -14.5, -1.948374, 14.5, 14.5, -1.948374, 14.5, 14.5, -1.948374, -14.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
+[node name="LevelTemplate" type="Node3D" unique_id=1469967748]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=828062522]
+environment = SubResource("Environment_gr3xe")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=1657713891]
+transform = Transform3D(1, 0, 0, 0, 0.7071068, 0.7071068, 0, -0.7071068, 0.7071068, -1.9073486e-06, 0, -0.23539734)
+light_energy = 4.0
+omni_range = 25.0
+
+[node name="Player" parent="." unique_id=884547836 instance=ExtResource("1_eyte8")]
+
+[node name="TestStringObject" parent="." unique_id=1771573288 instance=ExtResource("2_7hipx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1787457, 0, -3.0460615)
+
+[node name="DialogueTrigger" type="Area3D" parent="." unique_id=2142535781]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.0164838, 0)
+script = ExtResource("3_gr3xe")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DialogueTrigger" unique_id=1603405518]
+shape = SubResource("BoxShape3D_ds0u5")
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="." unique_id=1063387485]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1859417, 0.07765198, 0.1547966)
+navigation_mesh = SubResource("NavigationMesh_ds0u5")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="NavigationRegion3D" unique_id=1018673257]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.948374, 0)
+use_collision = true
+size = Vector3(30, 1, 30)
+
+[node name="Enemy" parent="." unique_id=1264866562 node_paths=PackedStringArray("player_target") instance=ExtResource("4_ds0u5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5259857, 11.156425)
+player_target = NodePath("../Player")
+
+[connection signal="body_entered" from="DialogueTrigger" to="DialogueTrigger" method="_on_body_entered"]
