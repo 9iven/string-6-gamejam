@@ -14,6 +14,7 @@ var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 @onready var crosshair = %Crosshair
 @onready var sanity_bar = %SanityBar
 @onready var stamina_bar = %StaminaBar
+@onready var terminal_ui = $TerminalUI
 
 # Variabel Internal
 var _mouse_motion: Vector2 = Vector2.ZERO
@@ -81,18 +82,17 @@ func _handle_mouse_capture(event: InputEvent) -> void:
 			get_tree().root.set_input_as_handled()
 
 func _try_interact() -> void:
-	# Mengecek apakah sinar raycast sedang menabrak sebuah objek
 	if interact_ray.is_colliding():
 		var target = interact_ray.get_collider()
 		
-		# Eksekusi fungsi khusus berdasarkan metode yang dimiliki target
 		if target.has_method("tune_string"):
 			target.tune_string(20.0)
 			Global.sanity_level = max(0.0, Global.sanity_level - 10.0)
 			Global.sanity_changed.emit(Global.sanity_level)
 			
-		elif target.has_method("hack_wall"):
-			target.hack_wall()
+		elif target.has_method("submit_password"):
+			# Membuka terminal dan mengirimkan data pintu yang sedang ditatap
+			terminal_ui.open_terminal(target)
 
 func _update_ui_bars() -> void:
 	# Memperbarui nilai UI secara konstan berdasarkan data Global
@@ -103,16 +103,20 @@ func _update_ui_bars() -> void:
 
 func _update_crosshair_color() -> void:
 	if crosshair == null: 
-		return # Menghentikan eksekusi jika crosshair belum ada
+		return # Menghentikan eksekusi jika crosshair UI belum dimuat
 		
 	if interact_ray.is_colliding():
 		var target = interact_ray.get_collider()
-		if target.has_method("tune_string") or target.has_method("hack_wall"):
-			# Mengubah crosshair menjadi merah jika objek dapat diinteraksi
-			crosshair.color = Color(1, 0, 0) 
-			return # Menghentikan fungsi agar baris bawah tidak tereksekusi
-			
-	# Mengembalikan warna putih jika tidak sedang menatap objek interaktif
+		
+		# GUARD CLAUSE: Memastikan target fisis benar-benar ada di memori
+		if target != null:
+			# Mencari method "submit_password" (bukan lagi "hack_wall")
+			if target.has_method("tune_string") or target.has_method("submit_password"):
+				# Mengubah warna crosshair menjadi merah (bisa berinteraksi)
+				crosshair.color = Color(1, 0, 0) 
+				return # Hentikan fungsi di sini agar baris bawah tidak tereksekusi
+				
+	# Mengembalikan warna ke putih jika tidak menatap objek interaktif
 	crosshair.color = Color(1, 1, 1)
 
 func _apply_camera_rotation() -> void:

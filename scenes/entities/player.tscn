@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cjw37ovqlbgye" path="res://scripts/player.gd" id="1_08t41"]
 [ext_resource type="Texture2D" uid="uid://bane4l5irn48e" path="res://assets/mark1.png" id="2_1ie0h"]
+[ext_resource type="Script" uid="uid://cbe55x2djyabl" path="res://scripts/terminal_ui.gd" id="3_1ie0h"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_42nxq"]
 
@@ -77,3 +78,38 @@ offset_bottom = -30.0
 grow_vertical = 0
 theme_override_styles/fill = SubResource("StyleBoxFlat_1ie0h")
 show_percentage = false
+
+[node name="TerminalUI" type="CanvasLayer" parent="." unique_id=630476025]
+process_mode = 3
+script = ExtResource("3_1ie0h")
+
+[node name="ColorRect" type="ColorRect" parent="TerminalUI" unique_id=202966808]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5882353)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TerminalUI/ColorRect" unique_id=55693097]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="StatusLabel" type="Label" parent="TerminalUI/ColorRect/VBoxContainer" unique_id=1139334282]
+unique_name_in_owner = true
+layout_mode = 2
+text = "MASUKKAN SANDI ZONA:"
+
+[node name="InputField" type="LineEdit" parent="TerminalUI/ColorRect/VBoxContainer" unique_id=774832325]
+unique_name_in_owner = true
+layout_mode = 2
