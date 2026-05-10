@@ -8,6 +8,9 @@
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_rimy4"]
 
+[sub_resource type="SystemFont" id="SystemFont_gsx8a"]
+font_names = PackedStringArray("Chiller")
+
 [node name="RoomTemplate" type="Node3D" unique_id=1503796567]
 
 [node name="Floor" type="MeshInstance3D" parent="." unique_id=383405025]
@@ -57,3 +60,8 @@ shape = SubResource("BoxShape3D_rimy4")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=16435773]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4599013, 0)
+
+[node name="WallClue" type="Label3D" parent="." unique_id=1318519031]
+modulate = Color(0.4, 0, 0, 1)
+font = SubResource("SystemFont_gsx8a")
+font_size = 96

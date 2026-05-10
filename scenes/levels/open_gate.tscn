@@ -4,10 +4,6 @@
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_t60jh"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_sqcv8"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_luipp"]
-
 [node name="OpenGate" type="Node3D" unique_id=1421823310]
 
 [node name="PillarLeft" type="MeshInstance3D" parent="." unique_id=2027709010]
@@ -27,12 +23,3 @@ mesh = SubResource("BoxMesh_muunn")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PillarRight/StaticBody3D" unique_id=1181226139]
 shape = SubResource("BoxShape3D_t60jh")
-
-[node name="Header" type="MeshInstance3D" parent="." unique_id=1203787102]
-transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
-mesh = SubResource("BoxMesh_sqcv8")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="Header" unique_id=1129469210]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Header/StaticBody3D" unique_id=942798083]
-shape = SubResource("BoxShape3D_luipp")
