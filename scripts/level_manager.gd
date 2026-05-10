@@ -41,6 +41,7 @@ func _ready() -> void:
 		print("Galat Kritis: Gagal membangun 15 ruangan berurutan. Area terlalu sempit.")
 
 func _initialize_dungeon() -> void:
+	dungeon.clear()
 	path_connections.clear()
 	for x in dimensions.x:
 		dungeon.append([])
@@ -121,48 +122,78 @@ func _create_zone_lock(start_idx: int, end_idx: int, door_room_a_idx: int, door_
 func _build_3d_dungeon() -> void:
 	var room_instances = {}
 	
+	# 1. Tahap Inisialisasi: Fokus hanya pada membuat ruangan
 	for x in dimensions.x:
 		for y in dimensions.y:
-			var cell_val = str(dungeon[x][y])
-			if cell_val == "C": 
-				var pos_3d = Vector3(x * room_size, 0, y * room_size)
-				var new_room = room_prefab.instantiate()
-				new_room.position = pos_3d
-				add_child(new_room)
-				room_instances[Vector2i(x, y)] = new_room
-				valid_room_positions.append(pos_3d)
-				
-				# Injeksi teks sandi ke dinding jika ruangan ini terpilih
-				if new_room.has_node("WallClue"):
-					var clue_node = new_room.get_node("WallClue")
-					var grid_pos = Vector2i(x, y)
-					if zone_clues.has(grid_pos):
-						clue_node.text = "SANDI ZONA: " + zone_clues[grid_pos]
-					else:
-						clue_node.text = "" 
-
-	for pos in room_instances.keys():
-		var target_room = room_instances[pos]
-		if path_connections.has(pos):
-			var connections = path_connections[pos]
+			if str(dungeon[x][y]) != "C": continue
 			
-			if connections.has(pos + Vector2i(0, -1)) and target_room.has_node("Wall_N"):
-				var wall = target_room.get_node("Wall_N")
-				_spawn_connection(wall, pos, pos + Vector2i(0, -1))
-				wall.queue_free()
-				
-			if connections.has(pos + Vector2i(1, 0)) and target_room.has_node("Wall_E"):
-				var wall = target_room.get_node("Wall_E")
-				_spawn_connection(wall, pos, pos + Vector2i(1, 0))
-				wall.queue_free()
+			var room_pos = Vector2i(x, y)
+			var pos_3d = Vector3(x * room_size, 0, y * room_size)
+			var new_room = room_prefab.instantiate()
+			new_room.position = pos_3d
+			add_child(new_room)
+			
+			room_instances[room_pos] = new_room
+			valid_room_positions.append(pos_3d)
 
-			if connections.has(pos + Vector2i(0, 1)) and target_room.has_node("Wall_S"):
-				target_room.get_node("Wall_S").queue_free()
-				
-			if connections.has(pos + Vector2i(-1, 0)) and target_room.has_node("Wall_W"):
-				target_room.get_node("Wall_W").queue_free()
+	# 2. Tahap Geometri: Mengatur dinding, gerbang, dan sandi
+	for pos in room_instances.keys():
+		_process_room_geometry(room_instances[pos], pos)
 
 	call_deferred("bake_navigation_mesh", false)
+
+# --- HELPER FUNCTIONS UNTUK MENYEDERHANAKAN LOGIKA ---
+
+func _process_room_geometry(room: Node3D, pos: Vector2i) -> void:
+	var connections = path_connections.get(pos, [])
+	var wall_data = {
+		Vector2i(0, -1): "Wall_N",
+		Vector2i(1, 0): "Wall_E",
+		Vector2i(0, 1): "Wall_S",
+		Vector2i(-1, 0): "Wall_W"
+	}
+
+	# Proses Dinding dan Pintu
+	for direction in wall_data.keys():
+		var wall_name = wall_data[direction]
+		var wall_node = room.get_node_or_null(wall_name)
+		
+		if not wall_node: continue
+		
+		if connections.has(pos + direction):
+			# Jika ada koneksi, buat gerbang lalu hapus dinding
+			if direction in [Vector2i(0, -1), Vector2i(1, 0)]:
+				_spawn_connection(wall_node, pos, pos + direction)
+			wall_node.queue_free()
+
+	# Proses Penempelan Sandi (Hanya jika dibutuhkan)
+	if zone_clues.has(pos):
+		_place_clue_in_room(room, pos, wall_data, connections)
+
+func _place_clue_in_room(room: Node3D, pos: Vector2i, wall_data: Dictionary, connections: Array) -> void:
+	var clue_node = room.get_node_or_null("WallClue")
+	if not clue_node: return
+
+	for direction in wall_data.keys():
+		# Guard Clause: Cari dinding yang TIDAK punya koneksi (solid)
+		if connections.has(pos + direction): continue
+		
+		var wall_name = wall_data[direction]
+		var wall_node = room.get_node_or_null(wall_name)
+		
+		# Pastikan wall belum dihapus dan punya TextSlot
+		if not wall_node or wall_node.is_queued_for_deletion(): continue
+		if not wall_node.has_node("TextSlot"): continue
+		
+		var slot = wall_node.get_node("TextSlot")
+		clue_node.text = "SANDI ZONA: " + zone_clues[pos]
+		clue_node.global_transform = slot.global_transform
+		clue_node.scale = Vector3.ONE
+		clue_node.show()
+		return # Berhenti setelah berhasil menempel satu kali
+
+	# Jika sampai sini tidak ketemu dinding solid, sembunyikan teks
+	clue_node.hide()
 
 func _spawn_connection(wall_node: Node3D, room_a: Vector2i, room_b: Vector2i) -> void:
 	var connection_prefab = open_gate_prefab
