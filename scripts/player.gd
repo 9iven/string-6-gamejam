@@ -38,6 +38,9 @@ var _mouse_motion: Vector2 = Vector2.ZERO
 # ==========================================
 
 func _ready() -> void:
+	collision_mask = 3 
+	interact_ray.collision_mask = 3
+	
 	# 1. Menangkap kursor mouse ke dalam jendela permainan
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	
@@ -59,10 +62,16 @@ func _input(event: InputEvent) -> void:
 		_try_interact()
 	
 	# Mendengarkan tombol spasi untuk masuk ke mode fokus
-	if event.is_action_pressed("ui_accept"): # "ui_accept" secara default adalah Spasi/Enter
+# Mendengarkan tombol spasi untuk masuk ke mode fokus
+	if event.is_action_pressed("ui_accept"): 
 		is_focusing = true
+		# Memanggil fungsi set_reveal_state(true) ke seluruh pintu di labirin
+		get_tree().call_group("doors", "set_reveal_state", true)
+		
 	elif event.is_action_released("ui_accept"):
 		is_focusing = false
+		# Mengembalikan seluruh pintu ke wujud aslinya
+		get_tree().call_group("doors", "set_reveal_state", false)
 
 func _process(delta: float) -> void:
 	# Fungsi ini berjalan setiap frame layar untuk mengurus elemen visual
@@ -131,11 +140,31 @@ func _try_interact() -> void:
 		if target.has_method("tune_string"):
 			target.tune_string(20.0)
 			Global.sanity_level = max(0.0, Global.sanity_level - 10.0)
-			Global.sanity_changed.emit(Global.sanity_level)
 			
-		elif target.has_method("submit_password"):
-			# Membuka terminal dan mengirimkan data pintu yang sedang ditatap
-			terminal_ui.open_terminal(target)
+		elif target.has_meta("door_type"):
+			var type = target.get_meta("door_type")
+			
+			if type == "real":
+				Global.sanity_level = max(0.0, Global.sanity_level - 5.0)
+				_check_monster_trigger() # Memicu hitung mundur monster
+				if target.has_method("fade_and_destroy"):
+					target.fade_and_destroy() 
+				
+			elif type == "trap":
+				Global.sanity_level = max(0.0, Global.sanity_level - 15.0)
+				Global.stamina_level = max(0.0, Global.stamina_level - 30.0)
+				_check_monster_trigger()
+				if target.has_method("fade_and_destroy"):
+					target.fade_and_destroy()
+				
+			elif type == "fake":
+				Global.sanity_level = max(0.0, Global.sanity_level - 2.0)
+				print("Pintu macet atau ini hanyalah sebuah dinding.")
+
+			# KOREKSI: Tambahkan blok untuk pintu Exit
+			elif type == "exit":
+				if terminal_ui != null:
+					terminal_ui.open_terminal(target)
 
 func _update_ui_bars() -> void:
 	# Memperbarui nilai UI secara konstan berdasarkan data Global
@@ -145,21 +174,16 @@ func _update_ui_bars() -> void:
 		stamina_bar.value = Global.stamina_level
 
 func _update_crosshair_color() -> void:
-	if crosshair == null: 
-		return # Menghentikan eksekusi jika crosshair UI belum dimuat
+	if crosshair == null: return 
 		
 	if interact_ray.is_colliding():
 		var target = interact_ray.get_collider()
-		
-		# GUARD CLAUSE: Memastikan target fisis benar-benar ada di memori
 		if target != null:
-			# Mencari method "submit_password" (bukan lagi "hack_wall")
-			if target.has_method("tune_string") or target.has_method("submit_password"):
-				# Mengubah warna crosshair menjadi merah (bisa berinteraksi)
+			# KOREKSI: Gunakan metadata door_type sebagai filter deteksi
+			if target.has_method("tune_string") or target.has_meta("door_type"):
 				crosshair.color = Color(1, 0, 0) 
-				return # Hentikan fungsi di sini agar baris bawah tidak tereksekusi
+				return 
 				
-	# Mengembalikan warna ke putih jika tidak menatap objek interaktif
 	crosshair.color = Color(1, 1, 1)
 
 func _apply_camera_rotation() -> void:
@@ -206,3 +230,10 @@ func _handle_movement_and_sprint(delta: float) -> void:
 		# Melakukan pengereman perlahan saat tidak ada input ditekan
 		velocity.x = move_toward(velocity.x, 0, current_speed)
 		velocity.z = move_toward(velocity.z, 0, current_speed)
+		
+func _check_monster_trigger() -> void:
+	Global.solved_doors += 1
+	if Global.solved_doors >= 5 and not Global.monster_spawned:
+		Global.monster_spawned = true
+		# Memanggil fungsi di level_manager melalui sistem group
+		get_tree().call_group("level_manager", "spawn_monster")

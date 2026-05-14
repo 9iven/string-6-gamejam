@@ -51,17 +51,18 @@ func _input(event: InputEvent) -> void:
 # FUNGSI VALIDASI SANDI
 # ==========================================
 func _on_password_submitted(new_text: String) -> void:
-	if target_door == null or not target_door.has_method("submit_password"):
-		return
+	if target_door == null: return
 		
-	# Mengubah teks menjadi huruf kapital semua (A, B, C) untuk mencegah galat akibat huruf kecil
 	var input_sandi = new_text.to_upper()
 	
-	# Memanggil fungsi di pintu untuk mengecek kebenaran sandi
-	var is_correct = target_door.submit_password(input_sandi)
+	# Mengambil sandi dari metadata yang ditanamkan oleh Level Manager
+	var required_password = target_door.get_meta("password")
 	
-	if is_correct:
+	if input_sandi == required_password:
 		close_terminal()
+		print("KEMENANGAN: Rute Pelarian Terbuka!")
+		target_door.queue_free()
+		# TODO: Picu transisi layar akhir (Game Over / Win Screen)
 	else:
 		status_label.text = "AKSES DITOLAK. SANDI TIDAK VALID."
 		input_field.clear()

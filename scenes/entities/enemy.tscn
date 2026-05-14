@@ -4,17 +4,21 @@
 [ext_resource type="Texture2D" uid="uid://bane4l5irn48e" path="res://assets/mark1.png" id="1_d7j71"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_67neu"]
+height = 1.7319336
 
 [node name="Enemy" type="CharacterBody3D" unique_id=1264866562]
 script = ExtResource("1_67neu")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1034771730]
-transform = Transform3D(2.19, 0, 0, 0, 2.19, 0, 0, 0, 2.19, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.29353273, 0)
 shape = SubResource("CapsuleShape3D_67neu")
 
 [node name="Sprite3D" type="Sprite3D" parent="." unique_id=1593989230]
-transform = Transform3D(12.082711, 0, 0, 0, 6.080995, 0, 0, 0, 1, 0, 0, 0)
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 billboard = 2
 texture = ExtResource("1_d7j71")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1182669783]
+
+[node name="VisionRayCast" type="RayCast3D" parent="." unique_id=798332018]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
