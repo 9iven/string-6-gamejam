@@ -8,6 +8,9 @@
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_8gv0l"]
 
+[sub_resource type="Environment" id="Environment_8gv0l"]
+background_mode = 1
+
 [node name="NavigationRegion3D" type="NavigationRegion3D" unique_id=1426436409 node_paths=PackedStringArray("player_node")]
 navigation_mesh = SubResource("NavigationMesh_8gv0l")
 script = ExtResource("1_ngxpg")
@@ -17,3 +20,10 @@ locked_door_prefab = ExtResource("4_8gv0l")
 player_node = NodePath("Player")
 
 [node name="Player" parent="." unique_id=884547836 instance=ExtResource("3_uc4y6")]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=520573049]
+environment = SubResource("Environment_8gv0l")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=618294400]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4595027, 0)
+light_energy = 0.0

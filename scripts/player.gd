@@ -6,9 +6,22 @@ const SPRINT_SPEED = 8.5
 const MOUSE_SENSITIVITY = 0.003
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
+# === MEKANIK PENGLIHATAN (VISION FOCUS) ===
+var is_focusing: bool = false
+const FOCUS_SANITY_DRAIN_RATE = 5.0 # Jumlah sanity yang terkuras per detik
+const NORMAL_FOV = 75.0
+const FOCUS_FOV = 60.0 # Kamera sedikit "men-zoom" untuk efek fokus
+
 # === REFERENSI NODE ===
 @onready var camera = $Camera3D
 @onready var interact_ray = $Camera3D/RayCast3D
+@onready var vision_light = $Camera3D/SpotLight3D
+
+# Parameter Cahaya
+const NORMAL_LIGHT_ENERGY = 1.0
+const FOCUS_LIGHT_ENERGY = 3.5 # Cahaya menjadi jauh lebih terang saat fokus
+const NORMAL_LIGHT_RANGE = 15.0
+const FOCUS_LIGHT_RANGE = 25.0 # Jarak pandang menembus kegelapan lebih jauh
 
 # Referensi UI (User Interface)
 @onready var crosshair = %Crosshair
@@ -44,11 +57,41 @@ func _input(event: InputEvent) -> void:
 	# Mendengarkan tombol interaksi ditekan
 	if event.is_action_pressed("interact"):
 		_try_interact()
+	
+	# Mendengarkan tombol spasi untuk masuk ke mode fokus
+	if event.is_action_pressed("ui_accept"): # "ui_accept" secara default adalah Spasi/Enter
+		is_focusing = true
+	elif event.is_action_released("ui_accept"):
+		is_focusing = false
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	# Fungsi ini berjalan setiap frame layar untuk mengurus elemen visual
 	_update_ui_bars()
 	_update_crosshair_color()
+	_handle_vision_focus(delta) # Memanggil sistem fokus setiap frame
+
+# --- FUNGSI BARU UNTUK FOKUS ---
+func _handle_vision_focus(delta: float) -> void:
+	if is_focusing and Global.sanity_level > 0:
+		# 1. Kuras sanity secara perlahan
+		Global.sanity_level = max(0.0, Global.sanity_level - (FOCUS_SANITY_DRAIN_RATE * delta))
+		
+		# 2. Efek Kamera: Zoom in (bidang pandang menyempit)
+		camera.fov = lerp(camera.fov, FOCUS_FOV, 8.0 * delta)
+		
+		# 3. Efek Cahaya: Meningkatkan intensitas dan jarak terang
+		if vision_light != null:
+			vision_light.light_energy = lerp(vision_light.light_energy, FOCUS_LIGHT_ENERGY, 8.0 * delta)
+			vision_light.spot_range = lerp(vision_light.spot_range, FOCUS_LIGHT_RANGE, 8.0 * delta)
+			
+	else:
+		# Jika spasi dilepas atau sanity habis, kembalikan kamera ke normal
+		camera.fov = lerp(camera.fov, NORMAL_FOV, 8.0 * delta)
+		
+		# Mengembalikan pencahayaan ke redup
+		if vision_light != null:
+			vision_light.light_energy = lerp(vision_light.light_energy, NORMAL_LIGHT_ENERGY, 8.0 * delta)
+			vision_light.spot_range = lerp(vision_light.spot_range, NORMAL_LIGHT_RANGE, 8.0 * delta)
 
 func _physics_process(delta: float) -> void:
 	# Fungsi ini berjalan setiap tick mesin fisika untuk kalkulasi fisis
