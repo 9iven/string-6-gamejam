@@ -1,5 +1,8 @@
 [gd_scene format=3 uid="uid://c0w2855ktq65q"]
 
+[ext_resource type="Material" uid="uid://3m2rjift4ise" path="res://assets/backrooms/carpet.tres" id="1_d0ooc"]
+[ext_resource type="Material" uid="uid://pvxwcoexdxia" path="res://assets/backrooms/wall.tres" id="2_6xs64"]
+
 [sub_resource type="BoxMesh" id="BoxMesh_rrump"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_lejs6"]
@@ -16,6 +19,7 @@ subpixel_positioning = 0
 
 [node name="Floor" type="MeshInstance3D" parent="." unique_id=383405025]
 transform = Transform3D(10, 0, 0, 0, 0.2, 0, 0, 0, 10, 0, 0, 0)
+material_override = ExtResource("1_d0ooc")
 mesh = SubResource("BoxMesh_rrump")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Floor" unique_id=68359833]
@@ -27,6 +31,7 @@ shape = SubResource("BoxShape3D_lejs6")
 
 [node name="Wall_N" type="MeshInstance3D" parent="." unique_id=748790220]
 transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 1, 0, 2, -4.5)
+material_override = ExtResource("2_6xs64")
 mesh = SubResource("BoxMesh_pkc08")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Wall_N" unique_id=2120369631]
@@ -38,6 +43,7 @@ shape = SubResource("BoxShape3D_rimy4")
 
 [node name="Wall_S" type="MeshInstance3D" parent="." unique_id=178983111]
 transform = Transform3D(10, 0, 0, 0, 4, 0, 0, 0, 1, 0, 2, 4.5)
+material_override = ExtResource("2_6xs64")
 mesh = SubResource("BoxMesh_pkc08")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Wall_S" unique_id=105925231]
@@ -49,6 +55,7 @@ shape = SubResource("BoxShape3D_rimy4")
 
 [node name="Wall_E" type="MeshInstance3D" parent="." unique_id=1692122683]
 transform = Transform3D(-4.371139e-07, 0, 1, 0, 4, 0, -10, 0, -4.371139e-08, 4.5, 2, 0)
+material_override = ExtResource("2_6xs64")
 mesh = SubResource("BoxMesh_pkc08")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Wall_E" unique_id=718003507]
@@ -60,6 +67,7 @@ shape = SubResource("BoxShape3D_rimy4")
 
 [node name="Wall_W" type="MeshInstance3D" parent="." unique_id=1619473809]
 transform = Transform3D(-4.371139e-07, 0, 1, 0, 4, 0, -10, 0, -4.371139e-08, -4.5, 2, 0)
+material_override = ExtResource("2_6xs64")
 mesh = SubResource("BoxMesh_pkc08")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Wall_W" unique_id=61242617]

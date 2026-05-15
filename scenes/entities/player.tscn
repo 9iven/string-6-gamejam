@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cjw37ovqlbgye" path="res://scripts/player.gd" id="1_08t41"]
 [ext_resource type="Texture2D" uid="uid://bane4l5irn48e" path="res://assets/mark1.png" id="2_1ie0h"]
+[ext_resource type="Texture2D" uid="uid://bildjsphrtfyp" path="res://assets/jumpscare.jpg" id="2_42nxq"]
 [ext_resource type="Script" uid="uid://cbe55x2djyabl" path="res://scripts/terminal_ui.gd" id="3_1ie0h"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_42nxq"]
@@ -15,6 +16,7 @@ bg_color = Color(0.8291473, 0.47626585, 0.5787312, 1)
 [node name="Player" type="CharacterBody3D" unique_id=884547836 groups=["player"]]
 collision_mask = 6
 script = ExtResource("1_08t41")
+jumpscare_texture = ExtResource("2_42nxq")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=463131772]
 shape = SubResource("CapsuleShape3D_42nxq")

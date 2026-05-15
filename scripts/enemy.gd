@@ -4,7 +4,7 @@ extends CharacterBody3D
 # KONFIGURASI AI & NAVIGASI
 # ==========================================
 @export var patrol_speed := 3.5
-@export var chase_speed := 6.5
+@export var chase_speed := 6.0
 @export var detection_radius := 15.0
 @export var attack_range := 1.5
 
@@ -58,7 +58,7 @@ func _evaluate_state() -> void:
 				current_state = "PATROL"
 				_pick_random_patrol_point()
 			elif dist_to_player <= attack_range:
-				_trigger_game_over()
+				_attack_player() # Pastikan memanggil fungsi ini
 
 # ==========================================
 # KENDALI MOTORIK
@@ -105,7 +105,17 @@ func _pick_random_patrol_point() -> void:
 		if not points.is_empty():
 			nav_agent.target_position = points.pick_random()
 
-func _trigger_game_over() -> void:
-	Global.sanity_level = 0.0
-	print("Game Over")
-	set_physics_process(false)
+func _attack_player() -> void:
+	# 1. Penalti Status: Mengurangi 50 poin kewarasan
+	Global.sanity_level = max(0.0, Global.sanity_level - 50.0)
+	
+	# 2. Reset Siklus: Memaksa pemain meretas 5 pintu lagi agar monster bisa muncul
+	Global.solved_doors = 0
+	Global.monster_spawned = false
+	
+	# 3. Pemicu Visual: Mengirim sinyal ke pemain untuk menampilkan gambar
+	if player.has_method("show_jumpscare"):
+		player.show_jumpscare()
+		
+	# 4. Eliminasi Diri: Menghapus entitas monster dari memori
+	queue_free()

@@ -32,6 +32,8 @@ var _mouse_motion := Vector2.ZERO
 @onready var stamina_bar: ProgressBar = %StaminaBar
 @onready var terminal_ui: CanvasLayer = $TerminalUI
 
+@export var jumpscare_texture: Texture2D
+
 # ==========================================
 # SIKLUS UTAMA
 # ==========================================
@@ -173,3 +175,30 @@ func _trigger_door_hack(target: Node) -> void:
 		
 	if target.has_method("fade_and_destroy"):
 		target.fade_and_destroy()
+		
+# ==========================================
+# EFEK VISUAL (JUMPSCARE)
+# ==========================================
+func show_jumpscare() -> void:
+	if not jumpscare_texture: 
+		print("Peringatan: Jumpscare Texture belum diisi di Inspector!")
+		return
+		
+	# Menginstansiasi layer kanvas baru secara prosedural (berada di atas semua UI)
+	var canvas := CanvasLayer.new()
+	canvas.layer = 10 
+	add_child(canvas)
+	
+	# Menginstansiasi kotak tekstur untuk menampilkan file PNG
+	var tex_rect := TextureRect.new()
+	tex_rect.texture = jumpscare_texture
+	tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	tex_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	canvas.add_child(tex_rect)
+	
+	# Memutar animasi pudar (fade-out) selama 1.5 detik
+	var tween := create_tween()
+	tween.tween_property(tex_rect, "modulate:a", 0.0, 1.5).set_trans(Tween.TRANS_EXPO)
+	
+	# Callback untuk menghapus seluruh elemen UI ini dari memori setelah animasi selesai
+	tween.tween_callback(func(): canvas.queue_free())
