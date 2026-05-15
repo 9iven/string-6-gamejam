@@ -10,11 +10,12 @@
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_dnftk"]
 geometry_parsed_geometry_type = 1
+geometry_collision_mask = 4294967042
 
 [sub_resource type="Environment" id="Environment_8gv0l"]
 background_mode = 1
 
-[node name="NavigationRegion3D" type="NavigationRegion3D" unique_id=1426436409 node_paths=PackedStringArray("player_node")]
+[node name="NavigationRegion3D" type="NavigationRegion3D" unique_id=1426436409 node_paths=PackedStringArray("player_node") groups=["level_manager"]]
 navigation_mesh = SubResource("NavigationMesh_dnftk")
 script = ExtResource("1_ngxpg")
 room_prefab = ExtResource("2_mk31d")

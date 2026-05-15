@@ -45,10 +45,11 @@ navigation_mesh = SubResource("NavigationMesh_ds0u5")
 [node name="CSGBox3D" type="CSGBox3D" parent="NavigationRegion3D" unique_id=1018673257]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.948374, 0)
 use_collision = true
+collision_layer = 2
+collision_mask = 0
 size = Vector3(30, 1, 30)
 
-[node name="Enemy" parent="." unique_id=1264866562 node_paths=PackedStringArray("player_target") instance=ExtResource("4_ds0u5")]
+[node name="Enemy" parent="." unique_id=1264866562 instance=ExtResource("4_ds0u5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5259857, 11.156425)
-player_target = NodePath("../Player")
 
 [connection signal="body_entered" from="DialogueTrigger" to="DialogueTrigger" method="_on_body_entered"]

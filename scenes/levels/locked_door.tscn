@@ -6,7 +6,9 @@
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5d3va"]
 
-[node name="LockedPuzzleDoor" type="StaticBody3D" unique_id=73994241]
+[node name="LockedPuzzleDoor" type="StaticBody3D" unique_id=73994241 groups=["doors"]]
+collision_layer = 4
+collision_mask = 0
 script = ExtResource("1_echpq")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1951937022]

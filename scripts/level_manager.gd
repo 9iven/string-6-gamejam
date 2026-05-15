@@ -36,7 +36,6 @@ var char_pool: Array[String] = ["A", "B", "C", "X", "Y", "Z", "7", "9"]
 # ==========================================
 func _ready() -> void:
 	randomize()
-	add_to_group("level_manager")
 	
 	# KALKULASI PUSAT DINAMIS: Mencari titik tengah matriks secara otomatis
 	start_pos = Vector2i(dimensions.x / 2, dimensions.y / 2)
@@ -223,9 +222,6 @@ func _build_3d_dungeon() -> void:
 	for pos in room_instances.keys():
 		_process_room_geometry(room_instances[pos], pos)
 
-# MENGABAIKAN Layer 2 (Pintu). Monster kini bisa menembus pintu tertutup!
-	if navigation_mesh != null:
-		navigation_mesh.geometry_collision_mask = 1
 
 	call_deferred("bake_navigation_mesh", false)
 
@@ -289,12 +285,13 @@ func _spawn_interaction(wall_node: Node3D, type: String, is_real_path: bool) -> 
 	
 # TERAPKAN UNTUK SEMUA PINTU: Mencegah clipping dan Z-fighting
 	if type != "open_gate":
-		# Majukan sedikit menjauhi beton
-		instance.translate_object_local(Vector3(0, 0, 0.02)) 
+		# Sesuaikan nilai offset Z ini (misalnya 0.1) agar dinding yang menebal 
+		# tidak menembus batas tengah kusen ruangan.
+		instance.translate_object_local(Vector3(0, 0, 0.1)) 
 		
-		# KOREKSI: X dikembalikan ke 1.0 agar tertutup rapat tanpa celah. 
-		# Z diubah ke 0.05 agar pintu sangat tipis dan tidak menabrak sudut dinding lain.
-		instance.scale = Vector3(1.0, 1.0, 0.05) 
+		# KOREKSI KETEBALAN: Ubah skala Z dari 0.05 menjadi 0.2 (atau 0.3) 
+		# agar dinding peretasan terlihat seperti balok beton yang solid.
+		instance.scale = Vector3(1.0, 1.0, 0.2) 
 		
 		instance.set_meta("door_type", type)
 		if type == "exit":
@@ -326,3 +323,12 @@ func spawn_monster() -> void:
 	monster.global_position = spawn_pos
 	
 	print("Sistem: Monster berhasil muncul di posisi ", spawn_pos)
+
+# ==========================================
+# PEMBARUAN PETA NAVIGASI DINAMIS (RUNTIME)
+# ==========================================
+func rebake_map() -> void:
+	# Menginstruksikan NavigationRegion3D untuk menggambar ulang peta AI
+	# Parameter 'false' memastikan proses ini dieksekusi di background thread
+	bake_navigation_mesh(false)
+	print("Sistem Navigasi: Peta AI telah dikalkulasi ulang karena perubahan geometri.")

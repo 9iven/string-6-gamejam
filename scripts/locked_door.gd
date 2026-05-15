@@ -4,12 +4,6 @@ var unique_material: StandardMaterial3D
 var original_color: Color = Color.WHITE
 
 func _ready() -> void:
-	collision_layer = 2
-	collision_mask = 1
-	
-	add_to_group("doors")
-	
-	
 	var mesh_instance = _find_mesh_instance(self)
 	if mesh_instance != null:
 		var mat = mesh_instance.get_active_material(0)
@@ -55,14 +49,19 @@ func fade_and_destroy() -> void:
 	var collision = get_node_or_null("CollisionShape3D")
 	if collision != null: collision.set_deferred("disabled", true)
 
-	# Validasi null pointer yang aman
 	if unique_material != null:
 		unique_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 		var tween = create_tween()
 		tween.tween_property(unique_material, "albedo_color:a", 0.0, 1.0)
-		tween.tween_callback(queue_free)
+		
+		# Callback menggunakan fungsi Lambda untuk mengeksekusi dua perintah sekaligus
+		tween.tween_callback(func():
+			queue_free()
+			get_tree().call_group("level_manager", "rebake_map")
+		)
 	else:
 		queue_free()
+		get_tree().call_group("level_manager", "rebake_map")
 
 func set_reveal_state(is_revealed: bool) -> void:
 	if not has_meta("door_type") or unique_material == null: return

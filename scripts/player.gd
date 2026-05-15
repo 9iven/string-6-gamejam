@@ -38,8 +38,6 @@ var _mouse_motion: Vector2 = Vector2.ZERO
 # ==========================================
 
 func _ready() -> void:
-	collision_mask = 3 
-	interact_ray.collision_mask = 3
 	
 	# 1. Menangkap kursor mouse ke dalam jendela permainan
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED

@@ -13,6 +13,7 @@ bg_color = Color(0.99905175, 0.7410606, 7.70092e-07, 1)
 bg_color = Color(0.8291473, 0.47626585, 0.5787312, 1)
 
 [node name="Player" type="CharacterBody3D" unique_id=884547836 groups=["player"]]
+collision_mask = 6
 script = ExtResource("1_08t41")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=463131772]
@@ -25,6 +26,7 @@ size = 10.0
 [node name="RayCast3D" type="RayCast3D" parent="Camera3D" unique_id=673739766]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.019651175, 0)
 target_position = Vector3(0, 0, -3)
+collision_mask = 6
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Camera3D" unique_id=815648559]
 light_size = 15.0
