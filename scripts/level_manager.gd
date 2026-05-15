@@ -285,13 +285,9 @@ func _spawn_interaction(wall_node: Node3D, type: String, is_real_path: bool) -> 
 	
 # TERAPKAN UNTUK SEMUA PINTU: Mencegah clipping dan Z-fighting
 	if type != "open_gate":
-		# Sesuaikan nilai offset Z ini (misalnya 0.1) agar dinding yang menebal 
-		# tidak menembus batas tengah kusen ruangan.
-		instance.translate_object_local(Vector3(0, 0, 0.1)) 
-		
 		# KOREKSI KETEBALAN: Ubah skala Z dari 0.05 menjadi 0.2 (atau 0.3) 
 		# agar dinding peretasan terlihat seperti balok beton yang solid.
-		instance.scale = Vector3(1.0, 1.0, 0.2) 
+		instance.scale = Vector3(1.0, 1.0, 0.999) 
 		
 		instance.set_meta("door_type", type)
 		if type == "exit":
@@ -308,10 +304,6 @@ func _place_clue_on_floor(room: Node3D, pos: Vector2i) -> void:
 # SISTEM ENTITAS MUSUH
 # ==========================================
 func spawn_monster() -> void:
-	if monster_prefab == null:
-		print("Galat: Monster Prefab belum diisi di Inspector!")
-		return
-		
 	var monster = monster_prefab.instantiate()
 	
 	# KOREKSI KRITIS: Objek WAJIB dimasukkan ke dalam memori Tree terlebih dahulu
@@ -321,8 +313,6 @@ func spawn_monster() -> void:
 	var spawn_pos = valid_room_positions.pick_random()
 	spawn_pos.y = 2.5 
 	monster.global_position = spawn_pos
-	
-	print("Sistem: Monster berhasil muncul di posisi ", spawn_pos)
 
 # ==========================================
 # PEMBARUAN PETA NAVIGASI DINAMIS (RUNTIME)
@@ -331,4 +321,3 @@ func rebake_map() -> void:
 	# Menginstruksikan NavigationRegion3D untuk menggambar ulang peta AI
 	# Parameter 'false' memastikan proses ini dieksekusi di background thread
 	bake_navigation_mesh(false)
-	print("Sistem Navigasi: Peta AI telah dikalkulasi ulang karena perubahan geometri.")

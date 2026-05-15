@@ -23,7 +23,7 @@ shape = SubResource("CapsuleShape3D_42nxq")
 transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 0.6, 0)
 size = 10.0
 
-[node name="RayCast3D" type="RayCast3D" parent="Camera3D" unique_id=673739766]
+[node name="RayCast3D" type="RayCast3D" parent="Camera3D" unique_id=673739766 groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.019651175, 0)
 target_position = Vector3(0, 0, -3)
 collision_mask = 6
