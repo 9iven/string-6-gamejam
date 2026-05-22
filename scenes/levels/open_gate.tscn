@@ -7,6 +7,7 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_t60jh"]
 
 [node name="OpenGate" type="Node3D" unique_id=1421823310]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1.01, 0, 0, 0)
 
 [node name="PillarLeft" type="MeshInstance3D" parent="." unique_id=2027709010]
 transform = Transform3D(3, 0, 0, 0, 4, 0, 0, 0, 1, -3.5, 2, 0)
