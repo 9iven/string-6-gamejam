@@ -65,25 +65,21 @@ func _generate_dense_maze() -> void:
 		for y in dimensions.y:
 			unvisited.append(Vector2i(x, y))
 
-	var stack = []
-	var current = start_pos
-	unvisited.erase(current)
-	stack.append(current)
+	var stack = [start_pos]
+	unvisited.erase(start_pos)
 
 	# Iterative Randomized DFS (Sempurna untuk grid padat tanpa void)
 	while stack.size() > 0:
-		current = stack.back()
-		var unvisited_neighbors = []
+		var current: Vector2i = stack.back()
 		var dirs = [Vector2i(0, 1), Vector2i(1, 0), Vector2i(0, -1), Vector2i(-1, 0)]
 		
-		for d in dirs:
-			var n = current + d
-			if n.x >= 0 and n.x < dimensions.x and n.y >= 0 and n.y < dimensions.y:
-				if unvisited.has(n):
-					unvisited_neighbors.append(n)
+		# Optimasi: Mengganti nested ifs dengan pemetaan dan filter Array
+		var unvisited_neighbors = dirs.map(func(d): return current + d).filter(func(n): 
+			return n.x >= 0 and n.x < dimensions.x and n.y >= 0 and n.y < dimensions.y and unvisited.has(n)
+		)
 
 		if unvisited_neighbors.size() > 0:
-			var next_room = unvisited_neighbors.pick_random()
+			var next_room: Vector2i = unvisited_neighbors.pick_random()
 			_add_connection(current, next_room)
 			unvisited.erase(next_room)
 			stack.append(next_room)
@@ -91,22 +87,20 @@ func _generate_dense_maze() -> void:
 			stack.pop_back()
 
 func _remove_dead_ends() -> void:
-	# Memindai seluruh 400 ruangan. Jika ada yang buntu (hanya punya 1 pintu), paksa tembus ke tetangga.
-	for x in dimensions.x:
-		for y in dimensions.y:
-			var pos = Vector2i(x, y)
-			if path_connections.has(pos) and path_connections[pos].size() == 1:
-				var dirs = [Vector2i(0, 1), Vector2i(1, 0), Vector2i(0, -1), Vector2i(-1, 0)]
-				var possible_links = []
-				for d in dirs:
-					var n = pos + d
-					if n.x >= 0 and n.x < dimensions.x and n.y >= 0 and n.y < dimensions.y:
-						if not path_connections[pos].has(n):
-							possible_links.append(n)
-				
-				if possible_links.size() > 0:
-					_add_connection(pos, possible_links.pick_random())
-
+	# Memindai seluruh ruangan. Jika ada yang buntu, paksa tembus ke tetangga.
+	for pos in path_connections.keys():
+		# Guard clause untuk melewati ruangan yang memiliki lebih dari 1 koneksi
+		if path_connections[pos].size() != 1: continue
+		
+		var dirs = [Vector2i(0, 1), Vector2i(1, 0), Vector2i(0, -1), Vector2i(-1, 0)]
+		
+		# Filter array untuk mencari ruang kosong di sebelah tanpa nested if
+		var possible_links = dirs.map(func(d): return pos as Vector2i + d).filter(func(n): 
+			return n.x >= 0 and n.x < dimensions.x and n.y >= 0 and n.y < dimensions.y and not path_connections[pos].has(n)
+		)
+		
+		if possible_links.size() > 0:
+			_add_connection(pos, possible_links.pick_random())
 
 # ==========================================
 # LOGIKA SANDI DAN RUTE TERPENDEK
@@ -208,7 +202,7 @@ func _assign_global_edge_types() -> void:
 func _build_3d_dungeon() -> void:
 	var room_instances = {}
 	
-	# 20x20 matriks padat (semua koordinat dirender)
+	# Matriks padat (semua koordinat dirender)
 	for x in dimensions.x:
 		for y in dimensions.y:
 			var room_pos = Vector2i(x, y)
@@ -222,7 +216,6 @@ func _build_3d_dungeon() -> void:
 	for pos in room_instances.keys():
 		_process_room_geometry(room_instances[pos], pos)
 
-
 	call_deferred("bake_navigation_mesh", false)
 
 func _process_room_geometry(room: Node3D, pos: Vector2i) -> void:
@@ -234,20 +227,21 @@ func _process_room_geometry(room: Node3D, pos: Vector2i) -> void:
 		Vector2i(-1, 0): "Wall_W"
 	}
 
-	for direction in wall_data.keys():
-		var wall_name = wall_data[direction]
+	for dir_key in wall_data.keys():
+		var direction: Vector2i = dir_key
+		var wall_name: String = wall_data[direction]
 		var wall_node = room.get_node_or_null(wall_name)
 		if not wall_node: continue
 		
-		var next_pos = pos + direction
+		var next_pos: Vector2i = pos + direction
 		
 		# Pintu Keluar Utama
 		if pos == exit_room_pos and direction == exit_wall_direction:
-			_spawn_interaction(wall_node, "exit", true)
+			_spawn_interaction(wall_node, "exit")
 			wall_node.queue_free()
 			continue
 			
-		# Tembok perbatasan absolut (Luar peta 20x20)
+		# Tembok perbatasan absolut (Luar peta) - Guard Clause
 		if next_pos.x < 0 or next_pos.x >= dimensions.x or next_pos.y < 0 or next_pos.y >= dimensions.y:
 			continue
 			
@@ -256,17 +250,16 @@ func _process_room_geometry(room: Node3D, pos: Vector2i) -> void:
 			if direction in [Vector2i(0, -1), Vector2i(-1, 0)]:
 				var edge_key = _get_edge_key(pos, next_pos)
 				var type = edge_types[edge_key]
-				_spawn_interaction(wall_node, type, true) 
+				
+				# Parameter "is_real_path" telah dihapus karena rute "fake" sudah dieliminasi
+				_spawn_interaction(wall_node, type) 
 					
 			wall_node.queue_free() 
-		else:
-			# Rute Palsu
-			_spawn_interaction(wall_node, "fake", false)
 
 	if clue_rooms.has(pos):
 		_place_clue_on_floor(room, pos)
 
-func _spawn_interaction(wall_node: Node3D, type: String, is_real_path: bool) -> void:
+func _spawn_interaction(wall_node: Node3D, type: String) -> void:
 	var prefab = null
 	
 	if type == "open_gate": prefab = open_gate_prefab
@@ -283,14 +276,13 @@ func _spawn_interaction(wall_node: Node3D, type: String, is_real_path: bool) -> 
 	target_pos.y = 0.0
 	instance.global_position = target_pos
 	
-# TERAPKAN UNTUK SEMUA PINTU: Mencegah clipping dan Z-fighting
 	if type != "open_gate":
-		# KOREKSI KETEBALAN: Ubah skala Z dari 0.05 menjadi 0.2 (atau 0.3) 
-		# agar dinding peretasan terlihat seperti balok beton yang solid.
-		instance.scale = Vector3(1.0, 1.0, 0.999) 
+		# Nilai skala dikembalikan ke 1.0 murni sesuai input Anda
+		instance.scale = Vector3(1.0, 1.0, 1.01) 
 		
 		instance.set_meta("door_type", type)
 		if type == "exit":
+			# Operasi penggabungan string untuk menyusun password
 			instance.set_meta("password", "".join(final_password))
 
 func _place_clue_on_floor(room: Node3D, pos: Vector2i) -> void:
@@ -309,8 +301,8 @@ func spawn_monster() -> void:
 	# KOREKSI KRITIS: Objek WAJIB dimasukkan ke dalam memori Tree terlebih dahulu
 	add_child(monster) 
 	
-	# SETELAH berada di dalam Tree, baru kita bisa memanipulasi koordinat globalnya
-	var spawn_pos = valid_room_positions.pick_random()
+	# Menggunakan deklarasi eksplisit untuk menghindari Variant warning
+	var spawn_pos: Vector3 = valid_room_positions.pick_random()
 	spawn_pos.y = 2.5 
 	monster.global_position = spawn_pos
 

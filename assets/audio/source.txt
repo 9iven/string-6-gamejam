@@ -1,0 +1,19 @@
+ambiance: https://opengameart.org/content/dark-ambiance
+
+mechanic: 
+https://opengameart.org/content/energy-drain
+https://opengameart.org/content/sound-effects-pack
+
+npc:
+
+monster: 
+https://opengameart.org/content/falling-body
+https://freesound.org/people/zombyKlr/sounds/712416/
+
+steps:
+https://opengameart.org/content/sound-effects-pack
+
+ui:
+https://opengameart.org/content/sound-effects-pack
+
+breathing: https://opengameart.org/content/horror-sound-effects-library

@@ -1,0 +1,125 @@
+[gd_scene format=3 uid="uid://dhpfqw8cps8j3"]
+
+[ext_resource type="Script" uid="uid://dhguw25ni82kc" path="res://scripts/pause_menu.gd" id="1_6tw0m"]
+[ext_resource type="PackedScene" uid="uid://wyw54y8b55sq" path="res://scenes/ui/main_menu.tscn" id="2_0lmf7"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_pu0qw"]
+font_size = 128
+
+[node name="PauseMenu" type="CanvasLayer" unique_id=183456254]
+process_mode = 2
+layer = 100
+script = ExtResource("1_6tw0m")
+main_menu_scene = ExtResource("2_0lmf7")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1915503100]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.11764706)
+
+[node name="MainPausePanel" type="Control" parent="." unique_id=1939750089]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainPausePanel" unique_id=560614653]
+custom_minimum_size = Vector2(500, 500)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -275.0
+offset_right = 250.0
+offset_bottom = 275.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 25
+
+[node name="PauseTitle" type="Label" parent="MainPausePanel/VBoxContainer" unique_id=1499967490]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Paused"
+label_settings = SubResource("LabelSettings_pu0qw")
+
+[node name="BtnResume" type="Button" parent="MainPausePanel/VBoxContainer" unique_id=1052896972]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Resume"
+
+[node name="BtnRestart" type="Button" parent="MainPausePanel/VBoxContainer" unique_id=1616737101]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Restart"
+
+[node name="BtnSettings" type="Button" parent="MainPausePanel/VBoxContainer" unique_id=1421886491]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Settings"
+
+[node name="BtnMainMenu" type="Button" parent="MainPausePanel/VBoxContainer" unique_id=550297254]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Back to Main Menu"
+
+[node name="SettingsPanel" type="Control" parent="." unique_id=772498604]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SettingsPanel" unique_id=944643251]
+custom_minimum_size = Vector2(500, 500)
+layout_mode = 0
+offset_left = 200.0
+offset_top = 400.0
+offset_right = 700.0
+offset_bottom = 900.0
+theme_override_constants/separation = 50
+
+[node name="LabelVolume" type="Label" parent="SettingsPanel/VBoxContainer" unique_id=1878041889]
+layout_mode = 2
+text = "Master Volume"
+
+[node name="SliderVolume" type="HSlider" parent="SettingsPanel/VBoxContainer" unique_id=2051292002]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 1.0
+step = 0.1
+
+[node name="LabelSens" type="Label" parent="SettingsPanel/VBoxContainer" unique_id=241755241]
+layout_mode = 2
+text = "Mouse Sensitivity"
+
+[node name="SliderSens" type="HSlider" parent="SettingsPanel/VBoxContainer" unique_id=1378914055]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.001
+max_value = 0.01
+step = 0.001
+value = 0.001
+
+[node name="BtnBack" type="Button" parent="SettingsPanel/VBoxContainer" unique_id=875597922]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(500, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Back"

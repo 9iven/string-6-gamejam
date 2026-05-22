@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://xha7e0b2gch5" path="res://scripts/enemy.gd" id="1_67neu"]
 [ext_resource type="Texture2D" uid="uid://bane4l5irn48e" path="res://assets/mark1.png" id="1_d7j71"]
+[ext_resource type="AudioStream" uid="uid://cy2yilp7t8bdq" path="res://assets/audio/monster/Stepfall.wav" id="3_ktqfp"]
+[ext_resource type="AudioStream" uid="uid://27r7pc3htsyr" path="res://assets/audio/monster/712416__zombyklr__jumpscare-1.mp3" id="4_defa4"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_67neu"]
 height = 1.7319336
@@ -21,3 +23,13 @@ billboard = 2
 texture = ExtResource("1_d7j71")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1182669783]
+
+[node name="FootstepAudio3D" type="AudioStreamPlayer3D" parent="." unique_id=1421087102]
+stream = ExtResource("3_ktqfp")
+max_distance = 15.0
+
+[node name="FootstepTimer" type="Timer" parent="." unique_id=1197228078]
+wait_time = 0.5
+
+[node name="JumpscareAudio" type="AudioStreamPlayer" parent="." unique_id=45363037]
+stream = ExtResource("4_defa4")

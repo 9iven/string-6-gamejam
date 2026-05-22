@@ -11,13 +11,14 @@ config_version=5
 [application]
 
 config/name="String6Gamejam"
-run/main_scene="uid://b7nbgl7b84dt2"
+run/main_scene="uid://wyw54y8b55sq"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 Global="*uid://dh2441rjklwep"
+GlobalAudio="*uid://cvelj0gutpj8x"
 
 [display]
 
@@ -79,3 +80,4 @@ sprint={
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+occlusion_culling/use_occlusion_culling=true

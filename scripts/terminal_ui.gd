@@ -1,8 +1,8 @@
 extends CanvasLayer
 
-# Injeksi Static Typing untuk efisiensi alokasi memori
 @onready var status_label: Label = %StatusLabel
 @onready var input_field: LineEdit = %InputField
+@onready var negative_player = $"../AudioNodes/NegativePlayer"
 
 var target_door: Node3D = null
 
@@ -23,13 +23,17 @@ func open_terminal(door: Node3D) -> void:
 func close_terminal() -> void:
 	hide()
 	target_door = null
+	
+	# Mengembalikan kontrol kamera kepada pemain
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	get_tree().paused = false
 
 func _input(event: InputEvent) -> void:
-	# Evaluasi singkat (Short-circuit evaluation)
 	if visible and event.is_action_pressed("ui_cancel"):
 		close_terminal()
+		
+		# Ini mencegah Pause Menu ikut terbuka secara tidak sengaja saat kita menutup Terminal.
+		get_viewport().set_input_as_handled()
 
 func _on_password_submitted(new_text: String) -> void:
 	if not target_door: return
@@ -38,10 +42,14 @@ func _on_password_submitted(new_text: String) -> void:
 	var required_password: String = target_door.get_meta("password")
 	
 	if input_sandi == required_password:
-		close_terminal()
-		print("KEMENANGAN: Rute Pelarian Terbuka!")
+		print("VICTORY: Escape Route Opened!")
+		
 		target_door.queue_free()
-		# Implementasi sistem transisi layar akhir dapat ditempatkan di sini
+		
+		close_terminal()
+		
+		# ending screen transition here later
 	else:
-		status_label.text = "AKSES DITOLAK. SANDI TIDAK VALID."
+		negative_player.play()
+		status_label.text = "ACCESS DENIED. INVALID PASSWORD."
 		input_field.clear()

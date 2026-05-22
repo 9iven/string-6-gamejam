@@ -5,7 +5,7 @@ extends CharacterBody3D
 # ==========================================
 const BASE_SPEED := 5.0
 const SPRINT_SPEED := 8.5
-const MOUSE_SENSITIVITY := 0.003
+#const MOUSE_SENSITIVITY := 0.003
 const FOCUS_SANITY_DRAIN := 5.0
 const SPRINT_STAMINA_DRAIN := 25.0
 
@@ -19,6 +19,27 @@ const FOCUS_LIGHT_RANGE := 25.0
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 # ==========================================
+# AUDIO REFERENCES
+# ==========================================
+@onready var sfx_breathing: AudioStreamPlayer = $AudioNodes/BreathingPlayer
+@onready var sfx_footstep: AudioStreamPlayer = $AudioNodes/FootstepPlayer
+@onready var sfx_mechanic: AudioStreamPlayer = $AudioNodes/MechanicPlayer
+@onready var sfx_jumpscare: AudioStreamPlayer = $AudioNodes/JumpscarePlayer
+
+@export_group("Audio Assets")
+@export var footstep_sounds: Array[AudioStream]
+@export var breathing_sounds: Array[AudioStream]
+@export var sfx_vision_toggle: AudioStream
+@export var sfx_hack_door: AudioStream
+
+# Variables for procedural footsteps
+var _step_timer: float = 0.0
+const WALK_STEP_INTERVAL: float = 0.4
+const SPRINT_STEP_INTERVAL: float = 0.3
+
+var _breath_timer: float = 0.0
+const BREATH_INTERVAL: float = 1.0
+# ==========================================
 # STATE & REFERENSI NODE
 # ==========================================
 var is_focusing := false
@@ -31,6 +52,7 @@ var _mouse_motion := Vector2.ZERO
 @onready var sanity_bar: ProgressBar = %SanityBar
 @onready var stamina_bar: ProgressBar = %StaminaBar
 @onready var terminal_ui: CanvasLayer = $TerminalUI
+@onready var pause_menu: CanvasLayer = $PauseMenu
 
 @export var jumpscare_texture: Texture2D
 
@@ -43,22 +65,33 @@ func _ready() -> void:
 	_initialize_ui()
 
 func _input(event: InputEvent) -> void:
+	# Mencegah pemain menjeda gim saat sedang meretas terminal
+	if terminal_ui and terminal_ui.visible:
+		return 
+
 	if event.is_action_pressed("ui_cancel"):
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		if pause_menu:
+			pause_menu.toggle_pause()
+
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
+		# Hanya tangkap mouse jika gim tidak sedang dijeda
+		if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE and not get_tree().paused:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 			get_tree().root.set_input_as_handled()
 
-	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and event is InputEventMouseMotion:
+	if not get_tree().paused and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and event is InputEventMouseMotion:
 		_mouse_motion += event.relative
 
 	if event.is_action_pressed("interact"):
 		_try_interact()
-	
+
 	if event.is_action_pressed("ui_accept"): 
 		is_focusing = true
+		sfx_mechanic.stream = sfx_vision_toggle
+		sfx_mechanic.play()
 		get_tree().call_group("doors", "set_reveal_state", true)
+		
+		
 	elif event.is_action_released("ui_accept"):
 		is_focusing = false
 		get_tree().call_group("doors", "set_reveal_state", false)
@@ -67,6 +100,7 @@ func _process(delta: float) -> void:
 	_update_ui()
 	_update_crosshair()
 	_handle_vision_focus(delta)
+	_handle_dynamic_audio(delta)
 
 func _physics_process(delta: float) -> void:
 	_apply_camera_rotation()
@@ -117,11 +151,10 @@ func _handle_vision_focus(delta: float) -> void:
 
 func _apply_camera_rotation() -> void:
 	if _mouse_motion == Vector2.ZERO: return
-	
-	rotate_y(-_mouse_motion.x * MOUSE_SENSITIVITY)
-	camera.rotate_x(-_mouse_motion.y * MOUSE_SENSITIVITY)
-	
-	# Menggunakan nilai radian absolut fisis (-80 hingga 80 derajat)
+
+	rotate_y(-_mouse_motion.x * Global.mouse_sensitivity)
+	camera.rotate_x(-_mouse_motion.y * Global.mouse_sensitivity)
+
 	camera.rotation.x = clampf(camera.rotation.x, -1.39626, 1.39626) 
 	_mouse_motion = Vector2.ZERO
 
@@ -130,11 +163,17 @@ func _handle_movement(delta: float) -> void:
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	var speed = BASE_SPEED
 	
-	Global.is_sprinting = Input.is_action_pressed("sprint") and Global.stamina_level > 0 and direction != Vector3.ZERO
+	# REVISI 2A: Pemain HANYA bisa sprint jika variabel is_exhausted bernilai false
+	Global.is_sprinting = Input.is_action_pressed("sprint") and not Global.is_exhausted and direction != Vector3.ZERO
 	
 	if Global.is_sprinting:
 		speed = SPRINT_SPEED
 		Global.stamina_level = max(0.0, Global.stamina_level - (SPRINT_STAMINA_DRAIN * delta)) 
+		
+		# PEMICU KELELAHAN: Jika stamina habis, kunci kemampuan sprint
+		if Global.stamina_level <= 0.0:
+			Global.is_exhausted = true
+			Global.is_sprinting = false # Paksa pemain kembali berjalan
 
 	if direction:
 		velocity.x = direction.x * speed
@@ -152,6 +191,9 @@ func _try_interact() -> void:
 		target.tune_string(20.0)
 		Global.sanity_level = max(0.0, Global.sanity_level - 10.0)
 	elif target.has_meta("door_type"):
+		#sound
+		sfx_mechanic.stream = sfx_hack_door
+		sfx_mechanic.play()
 		# Implementasi Match Statement untuk keterbacaan yang lebih akademis
 		match target.get_meta("door_type"):
 			"real":
@@ -163,6 +205,8 @@ func _try_interact() -> void:
 				_trigger_door_hack(target)
 			"fake":
 				Global.sanity_level = max(0.0, Global.sanity_level - 2.0)
+				if target.has_method("fade_and_destroy"):
+					target.fade_and_destroy()
 			"exit":
 				if terminal_ui: terminal_ui.open_terminal(target)
 
@@ -202,3 +246,54 @@ func show_jumpscare() -> void:
 	
 	# Callback untuk menghapus seluruh elemen UI ini dari memori setelah animasi selesai
 	tween.tween_callback(func(): canvas.queue_free())
+	
+# ==========================================
+# AUDIO PROCESSING SYSTEMS
+# ==========================================
+func _handle_dynamic_audio(delta: float) -> void:
+	# 1. Audio Pernapasan (Breathing)
+	if Global.is_exhausted:
+		_breath_timer -= delta
+		if _breath_timer <= 0.0 and not sfx_breathing.playing:
+			_play_breath()
+	else:
+		_breath_timer = 0.0
+
+	# 2. Procedural Footsteps
+	# Check if the player is actually moving on the ground
+	if is_on_floor() and velocity.length() > 0.5:
+		_step_timer -= delta
+		if _step_timer <= 0.0:
+			_play_footstep()
+	else:
+		# Reset timer so the first step triggers instantly when moving again
+		_step_timer = 0.0 
+
+func _play_footstep() -> void:
+	if footstep_sounds.is_empty(): return
+	
+	sfx_footstep.stream = footstep_sounds.pick_random()
+	
+	# Pitch modulation: Randomly alter the pitch slightly to prevent the "machine gun" repetition effect
+	sfx_footstep.pitch_scale = randf_range(0.85, 1.15)
+	
+	# Volume modulation: Sprinting is louder than walking
+	sfx_footstep.volume_db = 10.0 if Global.is_sprinting else 5.0
+	
+	sfx_footstep.play()
+	
+	# Set the delay for the next footstep based on speed state
+	_step_timer = SPRINT_STEP_INTERVAL if Global.is_sprinting else WALK_STEP_INTERVAL
+	
+func _play_breath() -> void:
+	if breathing_sounds.is_empty(): return
+	
+	# Pick a random breath sound from the 4 files
+	sfx_breathing.stream = breathing_sounds.pick_random()
+	
+	# Add slight pitch modulation so it sounds like organic panic, not a machine
+	sfx_breathing.pitch_scale = randf_range(0.9, 1.1)
+	sfx_breathing.play()
+	
+	# Reset the interval timer
+	_breath_timer = BREATH_INTERVAL

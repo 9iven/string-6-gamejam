@@ -2,8 +2,23 @@
 
 [ext_resource type="Script" uid="uid://cjw37ovqlbgye" path="res://scripts/player.gd" id="1_08t41"]
 [ext_resource type="Texture2D" uid="uid://bane4l5irn48e" path="res://assets/mark1.png" id="2_1ie0h"]
+[ext_resource type="AudioStream" uid="uid://cdu7qe8vbh7y7" path="res://assets/audio/steps/gassy-footstep1.wav" id="2_1yk18"]
 [ext_resource type="Texture2D" uid="uid://bildjsphrtfyp" path="res://assets/jumpscare.jpg" id="2_42nxq"]
 [ext_resource type="Script" uid="uid://cbe55x2djyabl" path="res://scripts/terminal_ui.gd" id="3_1ie0h"]
+[ext_resource type="AudioStream" uid="uid://blhlccr0lxlhu" path="res://assets/audio/steps/grassy-footstep2.wav" id="3_b4o2o"]
+[ext_resource type="PackedScene" uid="uid://dhpfqw8cps8j3" path="res://scenes/ui/pause_menu.tscn" id="3_d4qa6"]
+[ext_resource type="AudioStream" uid="uid://cduyi6574nlbi" path="res://assets/audio/steps/grassy-footstep3.wav" id="4_yr3on"]
+[ext_resource type="AudioStream" uid="uid://3vh7l4u1j7kc" path="res://assets/audio/steps/grassy-footstep4.wav" id="5_2ngu4"]
+[ext_resource type="AudioStream" uid="uid://c1vlsn27h5sgl" path="res://assets/audio/mechanic/breathing/Breath_Scared_00.wav" id="6_jv5ih"]
+[ext_resource type="AudioStream" uid="uid://cgoid5kghqbva" path="res://assets/audio/mechanic/qubodup-PowerDrain.ogg" id="7_c5rqy"]
+[ext_resource type="AudioStream" uid="uid://27r7pc3htsyr" path="res://assets/audio/monster/712416__zombyklr__jumpscare-1.mp3" id="7_dnykm"]
+[ext_resource type="AudioStream" uid="uid://4i2lx6bc0atb" path="res://assets/audio/mechanic/breathing/Breath_Scared_01.wav" id="7_n36er"]
+[ext_resource type="AudioStream" uid="uid://t4ctc81pmugy" path="res://assets/audio/mechanic/breathing/Breath_Scared_02.wav" id="8_d745t"]
+[ext_resource type="AudioStream" uid="uid://2wm47f8toilt" path="res://assets/audio/mechanic/breathing/Breath_Scared_03.wav" id="9_qc1tv"]
+[ext_resource type="AudioStream" uid="uid://d1owieb6o8jsg" path="res://assets/audio/mechanic/breathing/Breath_Scared_04.wav" id="10_xe83n"]
+[ext_resource type="AudioStream" uid="uid://bhyd7130nlw0t" path="res://assets/audio/mechanic/ScanUI_031.wav" id="11_yr3on"]
+[ext_resource type="AudioStream" uid="uid://dvb4hyue1we17" path="res://assets/audio/ambiance/Socapex - Dark Ambiance - Mastered.ogg" id="16_1yk18"]
+[ext_resource type="AudioStream" uid="uid://bi5sh8hmv6spw" path="res://assets/audio/ui/WrongUI_030.wav" id="19_yr3on"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_42nxq"]
 
@@ -16,7 +31,13 @@ bg_color = Color(0.8291473, 0.47626585, 0.5787312, 1)
 [node name="Player" type="CharacterBody3D" unique_id=884547836 groups=["player"]]
 collision_mask = 6
 script = ExtResource("1_08t41")
+footstep_sounds = Array[AudioStream]([ExtResource("2_1yk18"), ExtResource("3_b4o2o"), ExtResource("4_yr3on"), ExtResource("5_2ngu4")])
+breathing_sounds = Array[AudioStream]([ExtResource("6_jv5ih"), ExtResource("7_n36er"), ExtResource("8_d745t"), ExtResource("9_qc1tv"), ExtResource("10_xe83n")])
+sfx_vision_toggle = ExtResource("11_yr3on")
+sfx_hack_door = ExtResource("7_c5rqy")
 jumpscare_texture = ExtResource("2_42nxq")
+
+[node name="PauseMenu" parent="." unique_id=183456254 instance=ExtResource("3_d4qa6")]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=463131772]
 shape = SubResource("CapsuleShape3D_42nxq")
@@ -24,6 +45,8 @@ shape = SubResource("CapsuleShape3D_42nxq")
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1760197539]
 transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 0.6, 0)
 size = 10.0
+near = 0.2
+far = 200.0
 
 [node name="RayCast3D" type="RayCast3D" parent="Camera3D" unique_id=673739766 groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.019651175, 0)
@@ -31,9 +54,7 @@ target_position = Vector3(0, 0, -3)
 collision_mask = 6
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Camera3D" unique_id=815648559]
-light_size = 15.0
 shadow_enabled = true
-shadow_bias = 0.05
 
 [node name="Sprite3D" type="Sprite3D" parent="." unique_id=381492841]
 transform = Transform3D(3.3161895, 0, 0, 0, 2.6070282, 0, 0, 0, 3.6452157, 0, 0, 0)
@@ -90,7 +111,7 @@ show_percentage = false
 
 [node name="TerminalUI" type="CanvasLayer" parent="." unique_id=630476025]
 unique_name_in_owner = true
-process_mode = 3
+process_mode = 2
 script = ExtResource("3_1ie0h")
 
 [node name="ColorRect" type="ColorRect" parent="TerminalUI" unique_id=202966808]
@@ -123,3 +144,24 @@ text = "MASUKKAN SANDI ZONA:"
 [node name="InputField" type="LineEdit" parent="TerminalUI/ColorRect/VBoxContainer" unique_id=774832325]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="AudioNodes" type="Node" parent="." unique_id=1931023367]
+
+[node name="AmbiencePlayer" type="AudioStreamPlayer" parent="AudioNodes" unique_id=182979322]
+stream = ExtResource("16_1yk18")
+autoplay = true
+
+[node name="BreathingPlayer" type="AudioStreamPlayer" parent="AudioNodes" unique_id=1900449662]
+volume_db = -5.0
+
+[node name="FootstepPlayer" type="AudioStreamPlayer" parent="AudioNodes" unique_id=667285528]
+
+[node name="MechanicPlayer" type="AudioStreamPlayer" parent="AudioNodes" unique_id=1116577431]
+volume_db = -15.0
+
+[node name="JumpscarePlayer" type="AudioStreamPlayer" parent="AudioNodes" unique_id=2059195195]
+stream = ExtResource("7_dnykm")
+
+[node name="NegativePlayer" type="AudioStreamPlayer" parent="AudioNodes" unique_id=2040567394]
+stream = ExtResource("19_yr3on")
+volume_db = -15.0

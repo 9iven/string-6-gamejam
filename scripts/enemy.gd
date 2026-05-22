@@ -10,6 +10,11 @@ extends CharacterBody3D
 
 @onready var nav_agent: NavigationAgent3D = $NavigationAgent3D
 
+# Referensi Node Audio
+@onready var footstep_audio: AudioStreamPlayer3D = $FootstepAudio3D
+@onready var footstep_timer: Timer = $FootstepTimer
+@onready var jumpscare_audio: AudioStreamPlayer = $JumpscareAudio
+
 var player: CharacterBody3D
 var level_manager: Node3D
 var current_state := "PATROL"
@@ -19,12 +24,14 @@ var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 # INISIALISASI & SIKLUS FISIKA
 # ==========================================
 func _ready() -> void:
-	# Menggunakan casting yang aman (safe casting) untuk referensi node
 	player = get_tree().get_first_node_in_group("player") as CharacterBody3D
 	level_manager = get_tree().get_first_node_in_group("level_manager") as Node3D
 	
 	nav_agent.path_desired_distance = 1.0
 	nav_agent.target_desired_distance = 1.0
+	
+	# Mengikat siklus timer ke fungsi modulasi langkah
+	footstep_timer.timeout.connect(_on_footstep_timer_timeout)
 	
 	call_deferred("_pick_random_patrol_point")
 
@@ -36,6 +43,7 @@ func _physics_process(delta: float) -> void:
 		
 	_evaluate_state()
 	_execute_movement()
+	_handle_footstep_state()
 
 # ==========================================
 # LOGIKA STATE MACHINE
@@ -43,7 +51,6 @@ func _physics_process(delta: float) -> void:
 func _evaluate_state() -> void:
 	var dist_to_player := global_position.distance_to(player.global_position)
 	
-	# Implementasi Match Statement untuk State Machine yang elegan
 	match current_state:
 		"PATROL":
 			if dist_to_player <= detection_radius and _has_line_of_sight():
@@ -58,7 +65,7 @@ func _evaluate_state() -> void:
 				current_state = "PATROL"
 				_pick_random_patrol_point()
 			elif dist_to_player <= attack_range:
-				_attack_player() # Pastikan memanggil fungsi ini
+				_attack_player() 
 
 # ==========================================
 # KENDALI MOTORIK
@@ -83,6 +90,36 @@ func _execute_movement() -> void:
 	move_and_slide()
 
 # ==========================================
+# MANAJEMEN AUDIO
+# ==========================================
+func _handle_footstep_state() -> void:
+	# Hanya putar langkah jika entitas bergerak dan menyentuh lantai
+	if velocity.length() > 0.1 and is_on_floor():
+		if footstep_timer.is_stopped():
+			# Sesuaikan kecepatan langkah dengan state saat ini (berlari vs berjalan)
+			footstep_timer.wait_time = 0.35 if current_state == "CHASE" else 0.55
+			footstep_timer.start()
+	else:
+		footstep_timer.stop()
+
+func _on_footstep_timer_timeout() -> void:
+	# Modulasi pitch algoritmik untuk mencegah repetisi monoton
+	footstep_audio.pitch_scale = randf_range(0.85, 1.15)
+	footstep_audio.play()
+
+func _play_detached_jumpscare() -> void:
+	if jumpscare_audio.stream == null: return
+	
+	# Menduplikasi node audio agar bebas dari hierarki monster
+	var detached_audio = jumpscare_audio.duplicate()
+	get_tree().root.add_child(detached_audio)
+	
+	detached_audio.play()
+	
+	# Memerintahkan node duplikat untuk menghancurkan dirinya sendiri pasca-pemutaran
+	detached_audio.finished.connect(detached_audio.queue_free)
+
+# ==========================================
 # SENSOR & UTILITAS
 # ==========================================
 func _has_line_of_sight() -> bool:
@@ -92,11 +129,9 @@ func _has_line_of_sight() -> bool:
 	
 	var query := PhysicsRayQueryParameters3D.create(origin_pos, target_pos)
 	query.exclude = [self.get_rid()]
-	query.collision_mask = 1 # Sinar hanya terhalang oleh Environment
+	query.collision_mask = 1 
 	
 	var result := space_state.intersect_ray(query)
-	
-	# Optimasi: Mengembalikan evaluasi boolean secara langsung tanpa blok if-else
 	return result and result.has("collider") and result.collider.is_in_group("player")
 
 func _pick_random_patrol_point() -> void:
@@ -106,16 +141,19 @@ func _pick_random_patrol_point() -> void:
 			nav_agent.target_position = points.pick_random()
 
 func _attack_player() -> void:
-	# 1. Penalti Status: Mengurangi 50 poin kewarasan
+	# 1. Eksekusi Audio Terdekopel
+	_play_detached_jumpscare()
+	
+	# 2. Penalti Status: Mengurangi 50 poin kewarasan
 	Global.sanity_level = max(0.0, Global.sanity_level - 50.0)
 	
-	# 2. Reset Siklus: Memaksa pemain meretas 5 pintu lagi agar monster bisa muncul
+	# 3. Reset Siklus: Memaksa pemain meretas 5 pintu lagi agar monster bisa muncul
 	Global.solved_doors = 0
 	Global.monster_spawned = false
 	
-	# 3. Pemicu Visual: Mengirim sinyal ke pemain untuk menampilkan gambar
+	# 4. Pemicu Visual: Mengirim sinyal ke pemain untuk menampilkan gambar
 	if player.has_method("show_jumpscare"):
 		player.show_jumpscare()
 		
-	# 4. Eliminasi Diri: Menghapus entitas monster dari memori
+	# 5. Eliminasi Diri: Menghapus entitas monster dari memori dengan aman
 	queue_free()

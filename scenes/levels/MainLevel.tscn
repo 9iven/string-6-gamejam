@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://ddfwhs4e70bno" path="res://scenes/entities/player.tscn" id="3_uc4y6"]
 [ext_resource type="PackedScene" uid="uid://dyc6nfbvyfom6" path="res://scenes/levels/open_gate.tscn" id="3_xvlhx"]
 [ext_resource type="PackedScene" uid="uid://t0wpcuijiygy" path="res://scenes/levels/locked_door.tscn" id="4_8gv0l"]
-[ext_resource type="PackedScene" uid="uid://dnq0ad6najums" path="res://scenes/levels/final_exit.tscn" id="5_214bh"]
+[ext_resource type="PackedScene" uid="uid://cvgxw6cyg75c" path="res://scenes/levels/final_exit.tscn" id="5_214bh"]
 [ext_resource type="PackedScene" uid="uid://roomygclcrj8" path="res://scenes/entities/enemy.tscn" id="6_dnftk"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_dnftk"]

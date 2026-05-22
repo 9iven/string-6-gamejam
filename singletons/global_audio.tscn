@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://cvelj0gutpj8x"]
+
+[ext_resource type="Script" uid="uid://rqoy0p50yf2u" path="res://singletons/global_audio.gd" id="1_0it7k"]
+[ext_resource type="AudioStream" uid="uid://bigcb6aggaevf" path="res://assets/audio/ui/HoverUI_034.wav" id="1_cyg5d"]
+[ext_resource type="AudioStream" uid="uid://dakx1dup5lxn" path="res://assets/audio/ui/SelectUI_032.wav" id="2_0it7k"]
+
+[node name="GlobalAudio" type="Node" unique_id=1784137098]
+process_mode = 3
+script = ExtResource("1_0it7k")
+
+[node name="HoverPlayer" type="AudioStreamPlayer" parent="." unique_id=1467382549]
+stream = ExtResource("1_cyg5d")
+volume_db = -15.0
+
+[node name="ClickPlayer" type="AudioStreamPlayer" parent="." unique_id=1183033503]
+stream = ExtResource("2_0it7k")
+volume_db = -15.0

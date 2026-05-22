@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://dpippu023c1tv"]
+
+[ext_resource type="Texture2D" uid="uid://gowviy32uu8s" path="res://assets/backrooms/backrooms/painted_wall_2/painted_wall_2_color.png" id="1_yfj2o"]
+[ext_resource type="Texture2D" uid="uid://bm2xcdr52av8e" path="res://assets/backrooms/backrooms/wallpaper/wallpaper_normal.png" id="2_yfj2o"]
+[ext_resource type="Texture2D" uid="uid://dd5oncpmotgw1" path="res://assets/backrooms/backrooms/wallpaper/wallpaper_rough.png" id="3_hspwi"]
+
+[resource]
+albedo_texture = ExtResource("1_yfj2o")
+roughness_texture = ExtResource("3_hspwi")
+normal_enabled = true
+normal_texture = ExtResource("2_yfj2o")
