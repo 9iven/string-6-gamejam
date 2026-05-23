@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="DialogueData" format=3 uid="uid://cxt2m3j0061te"]
+
+[ext_resource type="Script" uid="uid://cbknl0d6cqqgl" path="res://rescources/dialogues/dialogue_line.gd" id="1_5eesd"]
+[ext_resource type="Script" uid="uid://bd0sb7mx28x7m" path="res://rescources/dialogues/dialogue_data.gd" id="2_whcng"]
+
+[sub_resource type="Resource" id="Resource_5eesd"]
+script = ExtResource("1_5eesd")
+text = "Halo"
+metadata/_custom_type_script = "uid://cbknl0d6cqqgl"
+
+[sub_resource type="Resource" id="Resource_whcng"]
+script = ExtResource("1_5eesd")
+speaker_name = "You"
+text = "Hi"
+metadata/_custom_type_script = "uid://cbknl0d6cqqgl"
+
+[sub_resource type="Resource" id="Resource_yk22t"]
+script = ExtResource("1_5eesd")
+text = "Bye bye!"
+metadata/_custom_type_script = "uid://cbknl0d6cqqgl"
+
+[resource]
+script = ExtResource("2_whcng")
+lines = Array[ExtResource("1_5eesd")]([SubResource("Resource_5eesd"), SubResource("Resource_whcng"), SubResource("Resource_yk22t")])
+metadata/_custom_type_script = "uid://bd0sb7mx28x7m"

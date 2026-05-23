@@ -1,6 +1,8 @@
 extends Node
 
 signal sanity_changed(new_sanity: float)
+# Indikator status untuk memblokir pergerakan dan interaksi lain
+var is_in_dialogue: bool = false
 
 var max_sanity: float = 100.0
 var sanity_level: float = 100.0

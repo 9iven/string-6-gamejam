@@ -19,6 +19,7 @@
 [ext_resource type="AudioStream" uid="uid://bhyd7130nlw0t" path="res://assets/audio/mechanic/ScanUI_031.wav" id="11_yr3on"]
 [ext_resource type="AudioStream" uid="uid://dvb4hyue1we17" path="res://assets/audio/ambiance/Socapex - Dark Ambiance - Mastered.ogg" id="16_1yk18"]
 [ext_resource type="AudioStream" uid="uid://bi5sh8hmv6spw" path="res://assets/audio/ui/WrongUI_030.wav" id="19_yr3on"]
+[ext_resource type="PackedScene" uid="uid://0f2gyoqtlf50" path="res://scenes/ui/UImanager.tscn" id="20_2ngu4"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_42nxq"]
 
@@ -29,7 +30,7 @@ bg_color = Color(0.99905175, 0.7410606, 7.70092e-07, 1)
 bg_color = Color(0.8291473, 0.47626585, 0.5787312, 1)
 
 [node name="Player" type="CharacterBody3D" unique_id=884547836 groups=["player"]]
-collision_mask = 6
+collision_mask = 22
 script = ExtResource("1_08t41")
 footstep_sounds = Array[AudioStream]([ExtResource("2_1yk18"), ExtResource("3_b4o2o"), ExtResource("4_yr3on"), ExtResource("5_2ngu4")])
 breathing_sounds = Array[AudioStream]([ExtResource("6_jv5ih"), ExtResource("7_n36er"), ExtResource("8_d745t"), ExtResource("9_qc1tv"), ExtResource("10_xe83n")])
@@ -51,7 +52,7 @@ far = 200.0
 [node name="RayCast3D" type="RayCast3D" parent="Camera3D" unique_id=673739766 groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.019651175, 0)
 target_position = Vector3(0, 0, -3)
-collision_mask = 6
+collision_mask = 22
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Camera3D" unique_id=815648559]
 shadow_enabled = true
@@ -165,3 +166,5 @@ stream = ExtResource("7_dnykm")
 [node name="NegativePlayer" type="AudioStreamPlayer" parent="AudioNodes" unique_id=2040567394]
 stream = ExtResource("19_yr3on")
 volume_db = -15.0
+
+[node name="UImanager" parent="." unique_id=1292715643 instance=ExtResource("20_2ngu4")]

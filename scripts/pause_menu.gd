@@ -3,29 +3,25 @@ extends CanvasLayer
 # Residu variabel main_menu_scene dan node audio lokal telah dibersihkan
 
 @onready var main_panel: Control = %MainPausePanel
-@onready var settings_panel: Control = %SettingsPanel
+@onready var settings_menu: Control = $SettingsMenu
 
 @onready var btn_resume: Button = %BtnResume
 @onready var btn_restart: Button = %BtnRestart
 @onready var btn_settings: Button = %BtnSettings
 @onready var btn_menu: Button = %BtnMainMenu
-@onready var btn_back: Button = %BtnBack
-
-@onready var slider_volume: HSlider = %SliderVolume
-@onready var slider_sens: HSlider = %SliderSens
 
 func _ready() -> void:
 	hide()
 	
+	
 	# Pengikatan sinyal fungsionalitas UI
 	btn_resume.pressed.connect(_on_resume)
 	btn_restart.pressed.connect(_on_restart)
+	
 	btn_settings.pressed.connect(_on_settings)
+	settings_menu.back_requested.connect(_on_back)
+	
 	btn_menu.pressed.connect(_on_main_menu)
-	btn_back.pressed.connect(_on_back)
-
-	slider_volume.value_changed.connect(_on_volume_changed)
-	slider_sens.value_changed.connect(_on_sensitivity_changed)
 	
 	# PANGGILAN KRITIS: Mengeksekusi pengikatan sinyal audio untuk seluruh tombol
 	_connect_button_sounds(self)
@@ -42,14 +38,12 @@ func toggle_pause() -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		_show_panel("main")
 		
-		slider_volume.value = Global.master_volume
-		slider_sens.value = Global.mouse_sensitivity
 	else:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _show_panel(panel_name: String) -> void:
 	main_panel.visible = (panel_name == "main")
-	settings_panel.visible = (panel_name == "settings")
+	settings_menu.visible = (panel_name == "settings")
 
 # ==========================================
 # ROUTING ANTARMUKA

@@ -70,6 +70,9 @@ func _input(event: InputEvent) -> void:
 		return 
 
 	if event.is_action_pressed("ui_cancel"):
+		if Global.is_in_dialogue:
+			return
+		
 		if pause_menu:
 			pause_menu.toggle_pause()
 
@@ -127,9 +130,15 @@ func _update_crosshair() -> void:
 	
 	if interact_ray.is_colliding():
 		var target = interact_ray.get_collider()
-		is_targeting = target and (target.has_method("tune_string") or target.has_meta("door_type"))
+		
+		# KOREKSI STRING: Ubah "execute_dialogue" menjadi "execute_interaction"
+		is_targeting = target and (
+			target.has_method("tune_string") 
+			or target.has_meta("door_type")
+			or target.has_method("execute_interaction")
+		)
 	
-	# Implementasi Ternary Operator untuk memangkas baris kondisional
+	# Implementasi Ternary Operator
 	crosshair.color = Color.RED if is_targeting else Color.WHITE
 
 func _handle_vision_focus(delta: float) -> void:
@@ -150,6 +159,10 @@ func _handle_vision_focus(delta: float) -> void:
 		vision_light.spot_range = lerp(vision_light.spot_range, target_range, 8.0 * delta)
 
 func _apply_camera_rotation() -> void:
+	if Global.is_in_dialogue:
+		_mouse_motion = Vector2.ZERO
+		return
+
 	if _mouse_motion == Vector2.ZERO: return
 
 	rotate_y(-_mouse_motion.x * Global.mouse_sensitivity)
@@ -159,6 +172,11 @@ func _apply_camera_rotation() -> void:
 	_mouse_motion = Vector2.ZERO
 
 func _handle_movement(delta: float) -> void:
+	if Global.is_in_dialogue:
+		velocity.x = move_toward(velocity.x, 0, BASE_SPEED)
+		velocity.z = move_toward(velocity.z, 0, BASE_SPEED)
+		return
+	
 	var input_dir = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	var speed = BASE_SPEED
@@ -187,14 +205,21 @@ func _try_interact() -> void:
 	if not interact_ray.is_colliding(): return
 	var target = interact_ray.get_collider()
 	
+	# 1. EVALUASI NPC / OBJEK GENERIK
+	if target.has_method("execute_interaction"):
+		target.execute_interaction()
+		return # Hentikan fungsi agar tidak memicu evaluasi di bawahnya
+		
+	# 2. EVALUASI TEKA-TEKI
 	if target.has_method("tune_string"):
 		target.tune_string(20.0)
 		Global.sanity_level = max(0.0, Global.sanity_level - 10.0)
+		
+	# 3. EVALUASI PINTU RETAS
 	elif target.has_meta("door_type"):
-		#sound
 		sfx_mechanic.stream = sfx_hack_door
 		sfx_mechanic.play()
-		# Implementasi Match Statement untuk keterbacaan yang lebih akademis
+		
 		match target.get_meta("door_type"):
 			"real":
 				Global.sanity_level = max(0.0, Global.sanity_level - 5.0)

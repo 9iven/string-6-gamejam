@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://dn46g885bl0h3"]
+
+[ext_resource type="Script" uid="uid://c1t4b25m3fd6c" path="res://scripts/exposition_npc.gd" id="1_4kvco"]
+[ext_resource type="Texture2D" uid="uid://chdntipr2pc00" path="res://scenes/ui/mark1.png" id="1_iify0"]
+[ext_resource type="Resource" uid="uid://cxt2m3j0061te" path="res://rescources/dialogues/level_dialogue.tres" id="2_n61dp"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4kvco"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_iify0"]
+
+[node name="ExpositionNPC" type="StaticBody3D" unique_id=48982636]
+collision_layer = 16
+collision_mask = 3
+script = ExtResource("1_4kvco")
+dialogue_resource = ExtResource("2_n61dp")
+
+[node name="BodyCollider" type="CollisionShape3D" parent="." unique_id=162505801]
+shape = SubResource("CapsuleShape3D_4kvco")
+
+[node name="NPCVisual" type="Sprite3D" parent="." unique_id=826803075]
+transform = Transform3D(2.69, 0, 0, 0, 2.69, 0, 0, 0, 2.69, 0, 0, 0)
+billboard = 2
+texture = ExtResource("1_iify0")
+
+[node name="InteractionSensor" type="Area3D" parent="." unique_id=1993921824]
+collision_layer = 16
+collision_mask = 3
+
+[node name="SensorCollider" type="CollisionShape3D" parent="InteractionSensor" unique_id=1646272633]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 0, 0, 0)
+shape = SubResource("SphereShape3D_iify0")
