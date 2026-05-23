@@ -1,15 +1,14 @@
 [gd_scene format=3 uid="uid://0f2gyoqtlf50"]
 
 [ext_resource type="Shader" uid="uid://b325vuibc1eyk" path="res://scenes/ui/UImanager.gdshader" id="1_scpii"]
-[ext_resource type="Script" uid="uid://jo4pk1gyea12" path="res://scripts/color_rect.gd" id="2_tl1aw"]
-[ext_resource type="Script" uid="uid://biuotejxpbtan" path="res://scripts/dialogue_box.gd" id="3_h1v8x"]
+[ext_resource type="Script" uid="uid://jo4pk1gyea12" path="res://rescources/dialogues/color_rect.gd" id="2_tl1aw"]
+[ext_resource type="Script" uid="uid://biuotejxpbtan" path="res://rescources/dialogues/dialogue_box.gd" id="3_h1v8x"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tl1aw"]
 shader = ExtResource("1_scpii")
 shader_parameter/distortion_intensity = 0.0
 
 [node name="UImanager" type="CanvasLayer" unique_id=1292715643]
-script = ExtResource("2_tl1aw")
 
 [node name="Control" type="Control" parent="." unique_id=501067536]
 layout_mode = 3
@@ -25,6 +24,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("2_tl1aw")
 
 [node name="DialogueBox" type="Panel" parent="." unique_id=1411214195]
 anchors_preset = 12

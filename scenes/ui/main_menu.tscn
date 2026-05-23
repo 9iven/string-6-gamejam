@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c5rq5ru7ecl8y" path="res://scripts/main_menu.gd" id="1_fe2o3"]
 [ext_resource type="PackedScene" uid="uid://c0w2855ktq65q" path="res://scenes/levels/room_template.tscn" id="2_1g8jr"]
+[ext_resource type="PackedScene" uid="uid://cwcd4wacvi75f" path="res://scenes/ui/settings_menu.tscn" id="3_uhagc"]
 [ext_resource type="AudioStream" uid="uid://b0ke7oh6e2jwt" path="res://assets/audio/ambiance/Insistent.ogg" id="4_m1kxf"]
 [ext_resource type="AudioStream" uid="uid://bigcb6aggaevf" path="res://assets/audio/ui/HoverUI_034.wav" id="5_uhagc"]
 [ext_resource type="AudioStream" uid="uid://dakx1dup5lxn" path="res://assets/audio/ui/SelectUI_032.wav" id="6_btxxm"]
@@ -42,6 +43,8 @@ spot_angle = 56.79608
 
 [node name="UILayer" type="CanvasLayer" parent="." unique_id=225162736]
 
+[node name="SettingsMenu" parent="UILayer" unique_id=1000110856 instance=ExtResource("3_uhagc")]
+
 [node name="MainPanel" type="Control" parent="UILayer" unique_id=2003992214]
 unique_name_in_owner = true
 layout_mode = 3
@@ -57,8 +60,10 @@ offset_left = 100.0
 offset_top = 200.0
 offset_right = 820.0
 offset_bottom = 375.0
-text = "Threadbare"
+text = "Ms. Lead"
 label_settings = SubResource("LabelSettings_x2yvf")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UILayer/MainPanel" unique_id=1429490846]
 custom_minimum_size = Vector2(500, 500)
@@ -89,51 +94,6 @@ custom_minimum_size = Vector2(200, 100)
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "Quit"
-
-[node name="SettingsPanel" type="Control" parent="UILayer" unique_id=2103348237]
-unique_name_in_owner = true
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/SettingsPanel" unique_id=2128930052]
-custom_minimum_size = Vector2(500, 500)
-layout_mode = 0
-offset_left = 200.0
-offset_top = 400.0
-offset_right = 700.0
-offset_bottom = 900.0
-theme_override_constants/separation = 50
-
-[node name="LabelVolume" type="Label" parent="UILayer/SettingsPanel/VBoxContainer" unique_id=1030219874]
-layout_mode = 2
-text = "Master Volume"
-
-[node name="SliderVolume" type="HSlider" parent="UILayer/SettingsPanel/VBoxContainer" unique_id=1809146437]
-unique_name_in_owner = true
-layout_mode = 2
-max_value = 1.0
-step = 0.1
-
-[node name="LabelSens" type="Label" parent="UILayer/SettingsPanel/VBoxContainer" unique_id=1045655863]
-layout_mode = 2
-text = "Mouse Sensitivity"
-
-[node name="SliderSens" type="HSlider" parent="UILayer/SettingsPanel/VBoxContainer" unique_id=1562038481]
-unique_name_in_owner = true
-layout_mode = 2
-min_value = 0.001
-max_value = 0.01
-step = 0.001
-value = 0.001
-
-[node name="BtnBack" type="Button" parent="UILayer/SettingsPanel/VBoxContainer" unique_id=287454094]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(500, 100)
-layout_mode = 2
-theme_override_font_sizes/font_size = 50
-text = "Back"
 
 [node name="MenuMusic" type="AudioStreamPlayer" parent="." unique_id=801130706]
 stream = ExtResource("4_m1kxf")

@@ -10,6 +10,7 @@ extends NavigationRegion3D
 @export var final_exit_prefab: PackedScene 
 @export var monster_prefab: PackedScene
 @export var player_node: CharacterBody3D
+@export var exposition_npc_prefab: PackedScene
 
 @export_group("Pengaturan Matriks Labirin")
 var dimensions: Vector2i = Vector2i(7, 7) 
@@ -47,7 +48,8 @@ func _ready() -> void:
 	_build_3d_dungeon()
 	
 	if player_node != null:
-		player_node.global_position = Vector3(start_pos.x * room_size, 2.0, start_pos.y * room_size)
+		player_node.global_position = Vector3(start_pos.x * room_size, 1.0, start_pos.y * room_size)
+		_spawn_exposition_npc()
 
 # ==========================================
 # PEMBANGKITAN BRAID MAZE (TANPA VOID)
@@ -313,3 +315,27 @@ func rebake_map() -> void:
 	# Menginstruksikan NavigationRegion3D untuk menggambar ulang peta AI
 	# Parameter 'false' memastikan proses ini dieksekusi di background thread
 	bake_navigation_mesh(false)
+	
+func _spawn_exposition_npc() -> void:
+	# Guard clause untuk memastikan data tidak null
+	if exposition_npc_prefab == null or player_node == null:
+		print("exposition_npc_prefab atau player_node belum diatur!")
+		return
+		
+	# Membuat instance dari NPC
+	var npc = exposition_npc_prefab.instantiate()
+	add_child(npc)
+	
+	# Mengambil vektor "Maju" (Forward) secara absolut dari orientasi pemain.
+	# Di dalam Godot, sumbu Z negatif (-Z) adalah arah depan secara default.
+	var forward_vector = -player_node.global_transform.basis.z.normalized()
+	
+	# Kalkulasi titik pijah: Posisi Pemain + (Vektor Maju * Jarak)
+	var spawn_distance = 3.0
+	var target_pos = player_node.global_position + (forward_vector * spawn_distance)
+	
+	# Mengunci sumbu Y agar NPC tidak melayang di udara atau tertanam di lantai
+	target_pos.y = 1.0
+	
+	# Eksekusi perpindahan fisis
+	npc.global_position = target_pos

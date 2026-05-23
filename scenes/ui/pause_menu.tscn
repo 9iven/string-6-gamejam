@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dhpfqw8cps8j3"]
 
 [ext_resource type="Script" uid="uid://dhguw25ni82kc" path="res://scripts/pause_menu.gd" id="1_6tw0m"]
+[ext_resource type="PackedScene" uid="uid://cwcd4wacvi75f" path="res://scenes/ui/settings_menu.tscn" id="2_8uki6"]
 [ext_resource type="AudioStream" uid="uid://bigcb6aggaevf" path="res://assets/audio/ui/HoverUI_034.wav" id="2_f6eus"]
 [ext_resource type="AudioStream" uid="uid://dakx1dup5lxn" path="res://assets/audio/ui/SelectUI_032.wav" id="3_8uki6"]
 
@@ -79,50 +80,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "Back to Main Menu"
 
-[node name="SettingsPanel" type="Control" parent="." unique_id=772498604]
-unique_name_in_owner = true
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="SettingsPanel" unique_id=944643251]
-custom_minimum_size = Vector2(500, 500)
-layout_mode = 0
-offset_left = 200.0
-offset_top = 400.0
-offset_right = 700.0
-offset_bottom = 900.0
-theme_override_constants/separation = 50
-
-[node name="LabelVolume" type="Label" parent="SettingsPanel/VBoxContainer" unique_id=1878041889]
-layout_mode = 2
-text = "Master Volume"
-
-[node name="SliderVolume" type="HSlider" parent="SettingsPanel/VBoxContainer" unique_id=2051292002]
-unique_name_in_owner = true
-layout_mode = 2
-max_value = 1.0
-step = 0.1
-
-[node name="LabelSens" type="Label" parent="SettingsPanel/VBoxContainer" unique_id=241755241]
-layout_mode = 2
-text = "Mouse Sensitivity"
-
-[node name="SliderSens" type="HSlider" parent="SettingsPanel/VBoxContainer" unique_id=1378914055]
-unique_name_in_owner = true
-layout_mode = 2
-min_value = 0.001
-max_value = 0.01
-step = 0.001
-value = 0.001
-
-[node name="BtnBack" type="Button" parent="SettingsPanel/VBoxContainer" unique_id=875597922]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(500, 100)
-layout_mode = 2
-theme_override_font_sizes/font_size = 50
-text = "Back"
+[node name="SettingsMenu" parent="." unique_id=1000110856 instance=ExtResource("2_8uki6")]
 
 [node name="HoverSound" type="AudioStreamPlayer" parent="." unique_id=1472146238]
 stream = ExtResource("2_f6eus")

@@ -1,13 +1,31 @@
-[gd_scene format=3 uid="uid://b7nbgl7b84dt2"]
+[gd_scene format=3 uid="uid://b371lyj8rgmgg"]
 
-[ext_resource type="PackedScene" uid="uid://ddfwhs4e70bno" path="res://scenes/entities/player.tscn" id="1_eyte8"]
-[ext_resource type="PackedScene" uid="uid://dmgnbto26fjki" path="res://scenes/entities/tunable_object.tscn" id="2_7hipx"]
-[ext_resource type="Script" uid="uid://p2utyh0pwep6" path="res://scripts/dialogue_trigger.gd" id="3_gr3xe"]
-[ext_resource type="PackedScene" uid="uid://roomygclcrj8" path="res://scenes/entities/enemy.tscn" id="4_ds0u5"]
+[ext_resource type="PackedScene" uid="uid://ddfwhs4e70bno" path="res://scenes/entities/player.tscn" id="1_xjijk"]
+[ext_resource type="PackedScene" uid="uid://dmgnbto26fjki" path="res://unused/tunable_object.tscn" id="2_6g50r"]
+[ext_resource type="PackedScene" uid="uid://roomygclcrj8" path="res://scenes/entities/enemy.tscn" id="4_161p7"]
 
 [sub_resource type="Environment" id="Environment_gr3xe"]
 background_mode = 1
 background_color = Color(0.40242627, 0.2745103, 0.21146971, 1)
+
+[sub_resource type="GDScript" id="GDScript_5fuqq"]
+script/source = "extends Area3D
+
+@export var dialogue_file_path: String = \"res://resources/dialogues/level_1.json\"
+var has_triggered: bool = false
+
+func _on_body_entered(body: Node3D) -> void:
+	# Memeriksa apakah yang masuk adalah pemain dan pemicu belum pernah diaktifkan
+	if body.name == \"Player\" and not has_triggered:
+		
+		# Validasi apakah UI sudah terdaftar di sistem Global
+		if Global.dialogue_box_ref != null:
+			has_triggered = true
+			Global.dialogue_box_ref.load_dialogue(dialogue_file_path)
+			print(\"Sistem [Trigger]: Dialog berhasil dieksekusi.\")
+		else:
+			print(\"Galat [Trigger]: dialogue_box_ref bernilai null. UI belum dimuat!\")
+"
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ds0u5"]
 size = Vector3(1, 1, 8.427246)
@@ -26,14 +44,14 @@ transform = Transform3D(1, 0, 0, 0, 0.7071068, 0.7071068, 0, -0.7071068, 0.70710
 light_energy = 4.0
 omni_range = 25.0
 
-[node name="Player" parent="." unique_id=884547836 instance=ExtResource("1_eyte8")]
+[node name="Player" parent="." unique_id=884547836 instance=ExtResource("1_xjijk")]
 
-[node name="TestStringObject" parent="." unique_id=1771573288 instance=ExtResource("2_7hipx")]
+[node name="TestStringObject" parent="." unique_id=1771573288 instance=ExtResource("2_6g50r")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1787457, 0, -3.0460615)
 
 [node name="DialogueTrigger" type="Area3D" parent="." unique_id=2142535781]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.0164838, 0)
-script = ExtResource("3_gr3xe")
+script = SubResource("GDScript_5fuqq")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="DialogueTrigger" unique_id=1603405518]
 shape = SubResource("BoxShape3D_ds0u5")
@@ -49,7 +67,7 @@ collision_layer = 2
 collision_mask = 0
 size = Vector3(30, 1, 30)
 
-[node name="Enemy" parent="." unique_id=1264866562 instance=ExtResource("4_ds0u5")]
+[node name="Enemy" parent="." unique_id=1264866562 instance=ExtResource("4_161p7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5259857, 11.156425)
 
 [connection signal="body_entered" from="DialogueTrigger" to="DialogueTrigger" method="_on_body_entered"]

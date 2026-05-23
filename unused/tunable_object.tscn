@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dmgnbto26fjki"]
 
-[ext_resource type="Script" uid="uid://cec7smijpothv" path="res://scripts/tunable_object.gd" id="1_layn1"]
+[ext_resource type="Script" uid="uid://cec7smijpothv" path="res://unused/tunable_object.gd" id="1_layn1"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_uuv7m"]
 
